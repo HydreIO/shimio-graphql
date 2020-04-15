@@ -1,7 +1,7 @@
 {
   "name": "@hydre/gql-ws-server",
   "version": "1.0.0",
-  "description": "A light websocket-only GraphQL server",
+  "description": "A light websocket GraphQL server",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
