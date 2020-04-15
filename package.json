@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "test": "node --harmony --experimental-specifier-resolution=node test/index.js",
+    "test:server": "node --harmony --experimental-specifier-resolution=node test/server.js",
+    "test:client": "node --harmony --experimental-specifier-resolution=node test/client.js",
     "lint": "eslint --color ."
   },
   "repository": {
@@ -21,7 +22,7 @@
   "dependencies": {
     "debug": "^4.1.1",
     "graphql": "^15.0.0",
-    "jszmq": "^0.1.2"
+    "ws": "^7.2.3"
   },
   "devDependencies": {
     "@hydre/doubt": "^2.0.10",
@@ -45,6 +46,7 @@
     "eslint-plugin-sonarjs": "^0.5.0",
     "eslint-plugin-switch-case": "^1.1.2",
     "eslint-plugin-unicorn": "^18.0.1",
+    "koa": "^2.11.0",
     "tap-spec-emoji": "^6.0.7"
   }
 }
