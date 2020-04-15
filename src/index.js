@@ -31,7 +31,7 @@ export default ({ ws_options = default_server_options, schema, root, context = {
   // to comply with the spec but still always take control of the http server
   // we extract both http server and port value while still using them after creating the WebSocket server
   // @see https://github.com/websockets/ws/blob/master/doc/ws.md#new-websocketserveroptions-callback
-  const { server: http_server = http.createServer().listen({ port: 3000, ...ws_options }), port, ...options } = ws_options ?? default_server_options
+  const { server: http_server = http.createServer().listen({ port: 3000, ...ws_options }), port, ...options } = ws_options
   const wss = new WebSocket.Server({ ...options, noServer: true })
   wss.on('connection', handle_client)
 
