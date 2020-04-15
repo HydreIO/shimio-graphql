@@ -20,3 +20,5 @@ There is a problem in my whole developer career i never solved, it is to underst
 when in facts it's so simple.. (this and why peoples use safari)
 
 So i made this Graphql server, it's **very** simple as it **have** to be and doesn't do extra stuff like inviting you to a barmitzvah
+
+*insult peoples for doing complex stuff, use zmq instead of simple ws* (shrug intensifies)
