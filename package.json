@@ -1,5 +1,5 @@
 {
-  "name": "@Sidy-group/gql-ws-server",
+  "name": "gql-ws-server",
   "version": "1.0.4",
   "description": "A light websocket GraphQL server",
   "main": "src/index.js",
@@ -13,17 +13,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/HydreIO/gql-ws-server.git"
+    "url": "git+https://github.com/Sidy-group/gql-ws-server.git"
   },
   "author": "Hydre",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/HydreIO/gql-ws-server/issues"
+    "url": "https://github.com/Sidy-group/gql-ws-server/issues"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
   },
-  "homepage": "https://github.com/HydreIO/gql-ws-server#readme",
+  "homepage": "https://github.com/Sidy-group/gql-ws-server#readme",
   "dependencies": {
     "debug": "^4.1.1",
     "graphql": "^15.0.0",
