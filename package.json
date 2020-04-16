@@ -1,6 +1,6 @@
 {
   "name": "gql-ws-server",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A light websocket GraphQL server",
   "main": "src/index.js",
   "type": "module",
@@ -20,7 +20,9 @@
   "bugs": {
     "url": "https://github.com/HydreIO/gql-ws-server/issues"
   },
-  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "homepage": "https://github.com/HydreIO/gql-ws-server#readme",
   "dependencies": {
     "debug": "^4.1.1",
