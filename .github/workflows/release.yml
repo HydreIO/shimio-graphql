@@ -30,7 +30,7 @@ jobs:
 
   publish-gpr:
     needs: test
-    if: ${{ github.event.release.types }} == 'created'
+    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -38,7 +38,7 @@ jobs:
         with:
           node-version: 13.8
           registry-url: https://npm.pkg.github.com/
-          scope: 'Sidy-group'
+          scope: '@Sidy-group'
       - name: Cache node_modules
         uses: actions/cache@v1
         env:

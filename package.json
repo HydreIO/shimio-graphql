@@ -1,5 +1,5 @@
 {
-  "name": "gql-ws-server",
+  "name": "@Sidy-group/gql-ws-server",
   "version": "1.0.3",
   "description": "A light websocket GraphQL server",
   "main": "src/index.js",
