@@ -1,4 +1,4 @@
-name: release package
+name: CI
 on:
   push:
     branches:
@@ -14,5 +14,5 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 13.8
-      - run: npx pnpm --install --frozen-shrinkwrap
+      - run: npx pnpm install --frozen-shrinkwrap
       - run: npm test
