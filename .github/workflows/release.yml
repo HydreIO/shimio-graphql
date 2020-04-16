@@ -29,26 +29,27 @@ jobs:
       - run: npm test
 
   publish-gpr:
-      needs: test
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-        - uses: actions/setup-node@v1
-          with:
-            node-version: 13.8
-            registry-url: https://npm.pkg.github.com/
-        - name: Cache node_modules
-          uses: actions/cache@v1
-          env:
-            cache-name: cache-node-modules
-          with:
-            path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
-            key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-            restore-keys: |
-              ${{ runner.os }}-build-${{ env.cache-name }}-
-              ${{ runner.os }}-build-
-              ${{ runner.os }}-
-        - run: npm ci
-        - run: npm publish
-          env:
-            NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    needs: test
+    if: github.event.release.types == 'created'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 13.8
+          registry-url: https://npm.pkg.github.com/
+      - name: Cache node_modules
+        uses: actions/cache@v1
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - run: npm ci
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
