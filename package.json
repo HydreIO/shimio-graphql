@@ -20,6 +20,7 @@
   "bugs": {
     "url": "https://github.com/HydreIO/gql-ws-server/issues"
   },
+  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
   "homepage": "https://github.com/HydreIO/gql-ws-server#readme",
   "dependencies": {
     "debug": "^4.1.1",
