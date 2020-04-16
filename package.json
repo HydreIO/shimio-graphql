@@ -1,5 +1,5 @@
 {
-  "name": "@hydre/gql-ws-server",
+  "name": "gql-ws-server",
   "version": "1.0.0",
   "description": "A light websocket GraphQL server",
   "main": "src/index.js",
