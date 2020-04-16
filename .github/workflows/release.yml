@@ -30,7 +30,7 @@ jobs:
 
   publish-gpr:
     needs: test
-    if: github.event.release.types == 'created'
+    if: ${{ github.event.release.types }} == 'created'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
