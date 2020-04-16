@@ -1,0 +1,18 @@
+name: release package
+on:
+  push:
+    branches:
+      - edge
+    tags:
+      - v*
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 13.8
+      - run: npx pnpm --install --frozen-shrinkwrap
+      - run: npm test

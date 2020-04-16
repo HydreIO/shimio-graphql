@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
+    "test": "node --harmony --experimental-specifier-resolution=node test/index.js",
     "test:server": "node --harmony --experimental-specifier-resolution=node test/server.js",
     "test:client": "node --harmony --experimental-specifier-resolution=node test/client.js",
     "lint": "eslint --color ."
