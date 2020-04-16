@@ -1,6 +1,6 @@
 <h1 align=center>gql-ws-server</h1>
 <p align=center>
-  <img src="https://img.shields.io/github/license/HydreIO/gql-ws-server.svg?style=for-the-badge" />
+  <img src="https://img.shields.io/github/license/Sidy-group/gql-ws-server.svg?style=for-the-badge" />
   <a href="https://www.npmjs.com/package/@hydre/gql-ws-server">
     <img src="https://img.shields.io/npm/v/@hydre/gql-ws-server.svg?logo=npm&style=for-the-badge" />
   </a>
