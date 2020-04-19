@@ -21,6 +21,7 @@ rules:
     - unix
   quotes: ["warn", "single", { avoidEscape: true }]
   semi: 0
+  no-use-extend-native/no-use-extend-native: 0
   comma-dangle:
     - warn
     - always-multiline
