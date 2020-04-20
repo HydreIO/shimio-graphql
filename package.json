@@ -1,32 +1,39 @@
 {
-  "name": "@Sidy-group/gql-ws-server",
+  "name": "@hydre/graphql-websocket",
   "version": "1.0.6",
-  "description": "A light websocket GraphQL server",
+  "description": "A Websocket GraphQL server and client",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
     "test": "node --harmony --experimental-specifier-resolution=node test/index.js",
-    "test:server": "node --harmony --experimental-specifier-resolution=node test/server.js",
-    "test:client": "node --harmony --experimental-specifier-resolution=node test/client.js",
+    "exemple:server": "node --harmony --experimental-specifier-resolution=node test/server.js",
+    "exemple:client": "node --harmony --experimental-specifier-resolution=node test/client.js",
     "lint": "eslint --color .",
     "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Sidy-group/gql-ws-server.git"
+    "url": "git+https://github.com/hydreio/graphql-websocket.git"
   },
   "author": "Hydre",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Sidy-group/gql-ws-server/issues"
+    "url": "https://github.com/hydreio/graphql-websocket/issues"
   },
+  "keywords": [
+    "graphql",
+    "server",
+    "client",
+    "websocket"
+  ],
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "access": "public"
   },
-  "homepage": "https://github.com/Sidy-group/gql-ws-server#readme",
+  "homepage": "https://github.com/hydreio/graphql-websocket#readme",
   "dependencies": {
     "debug": "^4.1.1",
     "graphql": "^15.0.0",
+    "koa-compose": "^4.1.0",
     "ws": "^7.2.3"
   },
   "devDependencies": {
@@ -51,6 +58,7 @@
     "eslint-plugin-sonarjs": "^0.5.0",
     "eslint-plugin-switch-case": "^1.1.2",
     "eslint-plugin-unicorn": "^18.0.1",
+    "koa": "^2.11.0",
     "tap-spec-emoji": "^6.0.7"
   }
 }
