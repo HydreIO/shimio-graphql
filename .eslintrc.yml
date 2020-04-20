@@ -50,7 +50,7 @@ rules:
   max-len: ["error", { code: 200 }]
   no-empty: ["error", { allowEmptyCatch: true }]
   unicorn/no-unreadable-array-destructuring: 0
-  unicorn/filename-case: ["error", { case: "camelCase" }]
+  unicorn/filename-case: ["error", { case: "snakeCase" }]
   func-style:
     - error
     - expression
