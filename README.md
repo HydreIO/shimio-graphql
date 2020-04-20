@@ -13,5 +13,5 @@
 ## Install
 
 ```sh
-npm install @sidy/gql-ws-server
+npm install @hydre/graphql-websocket
 ```
