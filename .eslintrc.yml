@@ -39,7 +39,13 @@ rules:
   lines-between-class-members: ["warn", always, { exceptAfterSingleLine: true }]
   consistent-return: 0
   no-plusplus: 0
+  generator-star-spacing: ["error", { "before": false, "after": false }]
   arrow-body-style: 2
+  no-await-in-loop: 0
+  no-case-declarations: 0
+  require-yield: 0
+  no-continue: 0
+  no-labels: 0
   arrow-parens:
     - error
     - as-needed
@@ -57,3 +63,4 @@ rules:
   import/no-named-as-default: 0
   no-restricted-syntax: 0
   camelcase: 0
+  unicorn/explicit-length-check: 0

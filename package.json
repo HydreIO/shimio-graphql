@@ -7,7 +7,7 @@
   "scripts": {
     "test": "node --harmony --experimental-specifier-resolution=node test/index.js",
     "exemple:server": "node --harmony --experimental-specifier-resolution=node test/server.js",
-    "exemple:client": "node --harmony --experimental-specifier-resolution=node test/client.js",
+    "exemple:koa": "node --harmony --experimental-specifier-resolution=node example/server/koa.js",
     "lint": "eslint --color .",
     "postversion": "git push && git push --tags"
   },
