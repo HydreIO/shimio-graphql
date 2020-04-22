@@ -1,40 +1,38 @@
 import doubt from '@hydre/doubt'
+import { readFileSync } from 'fs'
+import graphql from 'graphql'
+import { dirname, join } from 'path'
 import tapSpec from 'tap-spec-emoji'
-import Websocket from 'ws'
+import { fileURLToPath } from 'url'
 
-import { listen } from '../src'
+import { Client, Server } from '../src'
 
 doubt.createStream().pipe(tapSpec()).pipe(process.stdout)
 
-const gql_ws_options = {
-  // graphql schema
-  schema: /* GraphQL */ `
-  type Query { ping: String! }
-`,
-  // resolvers
-  root: { ping: () => 'Hello world!' },
-  // websocket options
-  ws_options: {
-    port: 3000,
-    path: '/',
-    perMessageDeflate: false,
-    maxPayload: 500,
+const { buildSchema } = graphql
+const directory = dirname(fileURLToPath(import.meta.url))
+
+const port = 3000
+
+const server = new Server({
+  schema: buildSchema(readFileSync(join(directory, 'schema.gql'), 'utf-8')),
+  rootValue: {
+    hello: ({ name }) => `Hello ${name} !`,
+    me: { sayHello: ({ to }) => `hello ${to}` },
+    async *onMessage() {
+      while (true) {
+        await new Promise(resolve => setTimeout(resolve, 2000))
+        yield { onMessage: 'Hello' }
+      }
+    },
   },
-  // context built on websocket upgrade and passed to each resolvers
-  context: async (request, socket, head) => ({}),
-  // if false the socket will be destroyed instead of upgrade, authentication usecases
-  validate: async (request, socket, head) => true,
-}
-
-'The server handle graphql queries'.doubt(async () => {
-  const server = listen({
-    schema: /* GraphQL */ `
-    type Query { ping: String! }
-  `,
-    root: { ping: () => 'Hello world!' },
-    ws_options: { port: 3000 },
-  })
-
-  server.close()
+  ws_option: { perMessageDeflate: false },
 })
 
+server.listen({ port, path: '/' }, () => { console.log('listening on :3000') })
+
+'The server handle graphql queries'.doubt(async () => {
+  const client = new Client({ address: `ws://localhost:${port}/`, options: { perMessageDeflate: false } })
+  await client.connect()
+  await 'query result is valid'.because(async () => client.query('{ hello(name: "Sceat") }')).isDeeplyEqualTo({ data: { hello: 'Hello Sceat !' } })
+})

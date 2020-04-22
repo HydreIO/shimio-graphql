@@ -25,6 +25,7 @@ const query = gql`
 `
 
 const main = async () => {
+  await client.connect()
   log('Hello!')
   const response = await client.query(query, { name: 'Sceat' })
   log('received: %O', await response.json())

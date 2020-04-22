@@ -26,7 +26,7 @@ export default class Client {
  * @param {Object} payload.options see https://github.com/websockets/ws/blob/master/doc/ws.md#new-websocketaddress-protocols-options
  * @param {Number} payload.timeout the server timeout + a latency prevision, ex: 30000 + 1000
  */
-  constructor({ address, protocols, options, timeout }) {
+  constructor({ address, protocols, options, timeout = 31_000 }) {
     log('initializing client..')
     this.#ws = new WebSocket(address, protocols, options)
     this.#ws_stream = WebSocket.createWebSocketStream(this.#ws)
@@ -63,8 +63,8 @@ export default class Client {
 
   async connect() {
     await promisify(this.#ws.once.bind(this.#ws))('open')
-    this.#ws.heartbeat()
-    this.#ws.on('ping', this.#ws.heartbeat)
+    this.heartbeat()
+    this.#ws.on('ping', this.heartbeat.bind(this))
     this.#ws.on('close', () => clearTimeout(this.#ws.timeout))
     log('client ready')
   }
@@ -84,7 +84,7 @@ export default class Client {
     const query_blocs = definitions.map(operation_definition => stripIgnoredCharacters(print(operation_definition)))
     log('operation', inspect({ id: this.#operation_id, operations: query_blocs, variables }, false, null, true))
     const result = once(this.#emitter, `${this.#operation_id}`)
-    if (!this.#ws_stream.write(JSON.stringify({ id: this.#operation_id, operations: query_blocs, variables }))) { await this.#ws_once('drain') }
+    if (!this.#ws_stream.write(JSON.stringify({ id: this.#operation_id, operations: query_blocs, variables }))) await this.#ws_once('drain')
     return {
       json: async () => (await result)[0],
       async *[Symbol.asyncIterator]() {

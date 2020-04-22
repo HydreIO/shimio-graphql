@@ -39,6 +39,7 @@ rules:
   lines-between-class-members: ["warn", always, { exceptAfterSingleLine: true }]
   consistent-return: 0
   no-plusplus: 0
+  import/no-extraneous-dependencies: 0
   generator-star-spacing: 0
   arrow-body-style: 2
   no-await-in-loop: 0
