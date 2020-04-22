@@ -39,7 +39,7 @@ rules:
   lines-between-class-members: ["warn", always, { exceptAfterSingleLine: true }]
   consistent-return: 0
   no-plusplus: 0
-  generator-star-spacing: ["error", { "before": false, "after": false }]
+  generator-star-spacing: 0
   arrow-body-style: 2
   no-await-in-loop: 0
   no-case-declarations: 0
