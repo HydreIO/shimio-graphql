@@ -15,8 +15,8 @@ const server = new Server({
   schema: buildSchema(readFileSync(join(directory, 'schema.gql'), 'utf-8')),
   rootValue: {
     hello: ({ name }) => `Hello ${name} !`,
-    me: { sayHello: ({ to }, context, contextValue, info) => `hello ${to}` },
-    async*onMessage() {
+    me: { sayHello: ({ to }) => `hello ${to}` },
+    async *onMessage() {
       while (true) {
         await new Promise(resolve => setTimeout(resolve, 2000))
         yield { onMessage: 'Hello' }

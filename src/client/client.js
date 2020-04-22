@@ -8,50 +8,70 @@ import WebSocket from 'ws'
 const log = debug('gql-ws')
 const { parse, print, stripIgnoredCharacters } = graphql
 
-/**
+export default class Client {
+  #ws
+  #ws_stream
+  #ws_once
+  #streams
+  #timeout
+
+  #emitter = new EventEmitter()
+  #operation_id = -1
+
+  /**
  * Create a graphql websocket client
  * @param {Object} payload
  * @param {String|url.URL} payload.address The URL to which to connect.
  * @param {String|Array} payload.protocols The list of subprotocols.
  * @param {Object} payload.options see https://github.com/websockets/ws/blob/master/doc/ws.md#new-websocketaddress-protocols-options
+ * @param {Number} payload.timeout the server timeout + a latency prevision, ex: 30000 + 1000
  */
-export default async ({ address, protocols, options }) => {
-  log('initializing client..')
-  const emitter = new EventEmitter()
-  const ws = new WebSocket(address, protocols, options)
-  const ws_stream = WebSocket.createWebSocketStream(ws)
-  const ws_once = promisify(ws_stream.once.bind(ws_stream))
-  const streams = new Map()
+  constructor({ address, protocols, options, timeout }) {
+    log('initializing client..')
+    this.#ws = new WebSocket(address, protocols, options)
+    this.#ws_stream = WebSocket.createWebSocketStream(this.#ws)
+    this.#ws_once = promisify(this.#ws_stream.once.bind(this.#ws_stream))
+    this.#streams = new Map()
+    this.#timeout = timeout
 
-  log('piping streams..')
-  pipeline(
-    ws_stream,
-    async source => {
-      log('incomming source')
-      for await (const chunk of source) {
-        const operation_response = JSON.parse(chunk.toString())
-        log('incomming chunk %O', operation_response)
-        const { id, operation_type, ...rest } = operation_response
-        try {
+    this.pipe_streams()
+  }
+
+  pipe_streams() {
+    pipeline(
+      this.#ws_stream,
+      async source => {
+        log('incomming source')
+        for await (const chunk of source) {
+          const operation_response = JSON.parse(chunk.toString())
+          log('incomming chunk %O', operation_response)
+          const { id, operation_type, ...rest } = operation_response
           if (operation_type === 'subscription') {
-            const through = streams.get(id)
+            const through = this.#streams.get(id)
             if (!through.write(rest)) await promisify(through.once.bind(through))('drain')
-          } else emitter.emit(`${id}`, rest)
-        } catch (error) {
-          console.error(error)
+          } else this.#emitter.emit(`${id}`, rest)
         }
-      }
-    },
-    error => { if (error) console.error(error) },
-  )
+      },
+      error => { if (error) console.error(error) },
+    )
+  }
 
-  await promisify(ws.once.bind(ws))('open')
-  log('client ready')
-  let id = -1
+  heartbeat() {
+    clearTimeout(this.#ws.timeout)
+    this.#ws.timeout = setTimeout(() => { this.#ws.terminate() }, this.#timeout)
+  }
 
-  return async (query, variables = {}) => {
+  async connect() {
+    await promisify(this.#ws.once.bind(this.#ws))('open')
+    this.#ws.heartbeat()
+    this.#ws.on('ping', this.#ws.heartbeat)
+    this.#ws.on('close', () => clearTimeout(this.#ws.timeout))
+    log('client ready')
+  }
+
+  async query(query, variables = {}) {
     log('querying')
-    id++
+    this.#operation_id++
     // supporting plain string and graphql-tag
     const { definitions } = query?.kind === 'Document' ? query : parse(query)
     // failing when some operations have no names, but allowing unnamed single operations
@@ -59,12 +79,12 @@ export default async ({ address, protocols, options }) => {
     log('include subscription [%O]', include_subscription)
 
     const pass_through = include_subscription ? new PassThrough({ objectMode: true }) : Readable.from([])
-    if (include_subscription) streams.set(id, pass_through)
+    if (include_subscription) this.#streams.set(this.#operation_id, pass_through)
 
     const query_blocs = definitions.map(operation_definition => stripIgnoredCharacters(print(operation_definition)))
-    log('operation', inspect({ id, operations: query_blocs, variables }, false, null, true))
-    const result = once(emitter, `${id}`)
-    if (!ws_stream.write(JSON.stringify({ id, operations: query_blocs, variables }))) { await ws_once('drain') }
+    log('operation', inspect({ id: this.#operation_id, operations: query_blocs, variables }, false, null, true))
+    const result = once(this.#emitter, `${this.#operation_id}`)
+    if (!this.#ws_stream.write(JSON.stringify({ id: this.#operation_id, operations: query_blocs, variables }))) { await this.#ws_once('drain') }
     return {
       json: async () => (await result)[0],
       async *[Symbol.asyncIterator]() {

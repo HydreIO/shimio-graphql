@@ -17,6 +17,7 @@ export default class {
 
   #middleware = []
   #context_is_static
+  #timeout
 
   /**
   * Initialize a graphql websocket server with a configuration object
@@ -25,6 +26,7 @@ export default class {
   * @param {graphql.SchemaDefinitionNode} options.schema a graphql schema
   * @param {Object} options.rootValue a graphql resolver object
   * @param {Object|Function} options.context the context object or as a function/async function to dynamically build it on every upgrade request
+  * @param {Number} options.timeout in millisecond, try to deconnect non reachable clients
   */
   constructor({
     ws_options = { path: '/', perMessageDeflate: false, maxPayload: 500 },
@@ -32,12 +34,14 @@ export default class {
     rootValue = (() => { throw new Error('Missing or invalid resolvers') })(),
     context = {},
     web_server = http.createServer(),
+    timeout = 30_000,
   }) {
     this.#ws_options = ws_options
     this.#schema = schema
     this.#rootValue = rootValue
     this.#web_server = web_server
     this.#context = context
+    this.#timeout = timeout
 
     this.#context_is_static = typeof context === 'object'
   }
@@ -66,11 +70,23 @@ export default class {
 
     wss.on('connection', (ws, { headers }, contextValue) => {
       const log_peer = log.extend(headers['sec-websocket-key'])
+      ws.alive = true
+      ws.on('pong', () => { ws.alive = true })
       const ws_stream = WebSocket.createWebSocketStream(ws)
       log_peer('connected!')
       const resolver = new Resolver({ schema: this.#schema, contextValue, rootValue: this.#rootValue, log_peer, ws_stream })
       pipeline(ws_stream, resolver[Symbol.asyncIterator].bind(resolver), ws_stream, error => { if (error) console.error(error) })
     })
+
+    const interval = setInterval(() => {
+      wss.clients.forEach(ws => {
+        if (!ws.alive) return ws.terminate()
+        ws.alive = false
+        ws.ping(() => { })
+      })
+    }, this.#timeout)
+
+    wss.on('close', () => clearInterval(interval))
 
     http_server.on('upgrade', async (...request_socket_head) => {
       const [request, socket] = request_socket_head

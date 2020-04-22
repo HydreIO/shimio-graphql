@@ -6,14 +6,9 @@ import { Client } from '../../src'
 const log = debug('client').extend(`${Math.random() * 9 + 1}`[0])
 const { URI = 'ws://localhost:3000/' } = process.env
 
-const main = async () => {
-  const foo = await Client({
-    address: URI,
-    options: { perMessageDeflate: false },
-  })
+const client = new Client({ address: URI, options: { perMessageDeflate: false } })
 
-  log('ping!')
-  const response = await foo(gql`
+const query = gql`
   query($name: String!) {
     yay: hello(name: $name)
   }
@@ -27,13 +22,13 @@ const main = async () => {
       sayHello(to: $yay)
     }
   }
+`
 
-  `, { name: 'Sceat' })
-
+const main = async () => {
+  log('Hello!')
+  const response = await client.query(query, { name: 'Sceat' })
   log('received: %O', await response.json())
-  for await (const m of response) {
-    log(m)
-  }
+  for await (const m of response) log(m)
 }
 
 main()
