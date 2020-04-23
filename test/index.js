@@ -6,7 +6,6 @@ import { pipeline } from 'stream'
 import tap_spec from 'tap-spec-emoji'
 
 import { Client, json, Server } from '../src'
-import reducer from '../src/server/async_reduce'
 
 pipeline(doubt.stream(), tap_spec(), process.stdout, error => { if (error) console.log(error) })
 

@@ -1,7 +1,7 @@
 import graphql from 'graphql'
 import graphql_error from 'graphql/error'
 import stream, { PassThrough } from 'stream'
-import { inspect, promisify } from 'util'
+import { promisify } from 'util'
 
 import async_reduce from './async_reduce'
 import Processing_error from './processing_error'

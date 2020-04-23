@@ -1,4 +1,3 @@
-import split from 'binary-split'
 import debug from 'debug'
 import { EventEmitter, on, once } from 'events'
 import graphql from 'graphql'

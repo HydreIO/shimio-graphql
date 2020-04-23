@@ -26,6 +26,7 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
       - run: npm ci
+      - run: npm run lint
       - run: npm test
 
   publish-gpr:
