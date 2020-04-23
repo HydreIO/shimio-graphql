@@ -1,19 +1,21 @@
+import split from 'binary-split'
 import debug from 'debug'
-import { EventEmitter, once } from 'events'
+import { EventEmitter, on, once } from 'events'
 import graphql from 'graphql'
 import { PassThrough, pipeline, Readable } from 'stream'
 import { inspect, promisify } from 'util'
 import WebSocket from 'ws'
 
-const log = debug('gql-ws')
+const log = debug('gql-ws').extend('client')
 const { parse, print, stripIgnoredCharacters } = graphql
+const async_pipeline = promisify(pipeline)
 
 export default class Client {
   #ws
-  #ws_stream
-  #ws_once
   #streams
   #timeout
+  #options
+  #protocols
 
   #emitter = new EventEmitter()
   #operation_id = -1
@@ -21,39 +23,38 @@ export default class Client {
   /**
  * Create a graphql websocket client
  * @param {Object} payload
- * @param {String|url.URL} payload.address The URL to which to connect.
  * @param {String|Array} payload.protocols The list of subprotocols.
- * @param {Object} payload.options see https://github.com/websockets/ws/blob/master/doc/ws.md#new-websocketaddress-protocols-options
+ * @param {Object} payload.ws_options see https://github.com/websockets/ws/blob/master/doc/ws.md#new-websocketaddress-protocols-options
  * @param {Number} payload.timeout the server timeout + a latency prevision, ex: 30000 + 1000
  */
-  constructor({ address, protocols, options, timeout = 31_000 }) {
+  constructor({ protocols, ws_options, timeout = 31_000 }) {
     log('initializing client..')
-    this.#ws = new WebSocket(address, protocols, options)
-    this.#ws_stream = WebSocket.createWebSocketStream(this.#ws)
-    this.#ws_once = promisify(this.#ws_stream.once.bind(this.#ws_stream))
     this.#streams = new Map()
     this.#timeout = timeout
-
-    this.pipe_streams()
+    this.#protocols = protocols
+    this.#options = ws_options
   }
 
-  pipe_streams() {
-    pipeline(
-      this.#ws_stream,
+  async pipe_streams() {
+    await async_pipeline(
+      on(this.#ws, 'message'),
       async source => {
-        log('incomming source')
-        for await (const chunk of source) {
-          const operation_response = JSON.parse(chunk.toString())
-          log('incomming chunk %O', operation_response)
-          const { id, operation_type, ...rest } = operation_response
-          if (operation_type === 'subscription') {
-            const through = this.#streams.get(id)
-            if (!through.write(rest)) await promisify(through.once.bind(through))('drain')
-          } else this.#emitter.emit(`${id}`, rest)
+        try {
+          for await (const chunk of source) {
+            const operation_response = JSON.parse(chunk.toString())
+            log('incomming operation %O', operation_response)
+            const { id, operation_type, ...rest } = operation_response
+            if (operation_type === 'subscription') {
+              const through = this.#streams.get(id)
+              if (!through.write(rest)) await promisify(through.once.bind(through))('drain')
+            } else this.#emitter.emit(`${id}`, rest)
+          }
+        } catch (error) {
+          console.error(error)
         }
       },
-      error => { if (error) console.error(error) },
     )
+    log('disconnected')
   }
 
   heartbeat() {
@@ -61,12 +62,24 @@ export default class Client {
     this.#ws.timeout = setTimeout(() => { this.#ws.terminate() }, this.#timeout)
   }
 
-  async connect() {
+  /**
+ * Connect the client to an address, a client must be disconnected before connecting again or it will throw an error
+ * @param {String} address The connection uri.
+ */
+  async connect(address) {
+    this.#ws = new WebSocket(address, this.#protocols, this.#options)
+    this.pipe_streams()
     await promisify(this.#ws.once.bind(this.#ws))('open')
     this.heartbeat()
     this.#ws.on('ping', this.heartbeat.bind(this))
     this.#ws.on('close', () => clearTimeout(this.#ws.timeout))
     log('client ready')
+  }
+
+  disconnect() {
+    clearTimeout(this.#ws.timeout)
+    this.#ws.terminate()
+    log('disconnected')
   }
 
   async query(query, variables = {}) {
@@ -84,11 +97,13 @@ export default class Client {
     const query_blocs = definitions.map(operation_definition => stripIgnoredCharacters(print(operation_definition)))
     log('operation', inspect({ id: this.#operation_id, operations: query_blocs, variables }, false, null, true))
     const result = once(this.#emitter, `${this.#operation_id}`)
-    if (!this.#ws_stream.write(JSON.stringify({ id: this.#operation_id, operations: query_blocs, variables }))) await this.#ws_once('drain')
+
+    const serialized_query = JSON.stringify({ id: this.#operation_id, operations: query_blocs, variables })
+    this.#ws.send(serialized_query)
     return {
       json: async () => (await result)[0],
       async *[Symbol.asyncIterator]() {
-        for await (const chunk of pass_through) yield chunk
+        yield* pass_through
       },
     }
   }

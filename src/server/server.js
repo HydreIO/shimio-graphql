@@ -1,12 +1,15 @@
 import debug from 'debug'
+import { on } from 'events'
 import http from 'http'
 import compose from 'koa-compose'
-import { pipeline } from 'stream'
+import stream from 'stream'
+import { promisify } from 'util'
 import WebSocket from 'ws'
 
 import Resolver from './resolver'
 
-const log = debug('gql-ws')
+const log = debug('gql-ws').extend('server')
+const pipeline = promisify(stream.pipeline)
 
 export default class {
   #ws_options
@@ -21,12 +24,12 @@ export default class {
 
   /**
   * Initialize a graphql websocket server with a configuration object
-  * @param {Object} options server options
-  * @param {Object} options.ws_options see https://github.com/websockets/ws/blob/master/doc/ws.md#new-websocketserveroptions-callback
-  * @param {graphql.SchemaDefinitionNode} options.schema a graphql schema
-  * @param {Object} options.rootValue a graphql resolver object
-  * @param {Object|Function} options.context the context object or as a function/async function to dynamically build it on every upgrade request
-  * @param {Number} options.timeout in millisecond, try to deconnect non reachable clients
+  * @param {Object} options - server options
+  * @param {Number} [options.timeout=30000] - in millisecond, try to deconnect non reachable clients
+  * @param {Object} [options.ws_options] - see https://github.com/websockets/ws/blob/master/doc/ws.md#new-websocketserveroptions-callback
+  * @param {graphql.SchemaDefinitionNode} options.schema - a graphql schema
+  * @param {Object} options.rootValue - a graphql resolver object
+  * @param {(Object|Function)} [options.context={}] - the context object or as a function/async function to dynamically build it on every upgrade request
   */
   constructor({
     ws_options = { path: '/', perMessageDeflate: false, maxPayload: 500 },
@@ -48,7 +51,7 @@ export default class {
 
   /**
    * Resolve the context to allow usage of dynamic context building
-   * @param {Object | Function | AsyncFunction} context
+   * @param {(Object | Function | AsyncFunction)} context
   */
   async context(...parameters) {
     if (this.#context_is_static) return this.#context
@@ -72,10 +75,14 @@ export default class {
       const log_peer = log.extend(headers['sec-websocket-key'])
       ws.alive = true
       ws.on('pong', () => { ws.alive = true })
-      const ws_stream = WebSocket.createWebSocketStream(ws)
       log_peer('connected!')
-      const resolver = new Resolver({ schema: this.#schema, contextValue, rootValue: this.#rootValue, log_peer, ws_stream })
-      pipeline(ws_stream, resolver[Symbol.asyncIterator].bind(resolver), ws_stream, error => { if (error) console.error(error) })
+
+      const resolver_options = { schema: this.#schema, contextValue, rootValue: this.#rootValue, log_peer, ws }
+      pipeline(
+        on(ws, 'message'),
+        async function*(source) { yield* new Resolver(resolver_options)[Symbol.asyncIterator](source) },
+        async source => { for await (const chunk of source) ws.send(chunk) },
+      )
     })
 
     const interval = setInterval(() => {
@@ -103,5 +110,6 @@ export default class {
       }
     })
     log('server started!')
+    return http_server
   }
 }

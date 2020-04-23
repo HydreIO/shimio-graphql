@@ -1,8 +1,10 @@
-import { GRAPHQL_ERROR } from './symbols'
+import graphql_error from 'graphql/error'
 
-export default class ProcessingError extends Error {
-  constructor(graphql_error) {
+const { GraphQLError } = graphql_error
+
+export default class Processing_error extends GraphQLError {
+  constructor({ id, operation_name, operation_type }, raw_graphql_error) {
     super('processing error')
-    this[GRAPHQL_ERROR] = graphql_error
+    Object.assign(this, { ...raw_graphql_error, id, operation_name, operation_type })
   }
 }

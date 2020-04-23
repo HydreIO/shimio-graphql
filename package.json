@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "node --harmony --experimental-specifier-resolution=node test/index.js",
+    "test:debug": "DEBUG='gql-ws*' node --harmony --experimental-specifier-resolution=node test/index.js",
     "exemple:client:simple": "DEBUG='gql-ws* client*' node --harmony --experimental-specifier-resolution=node example/client/simple.js",
     "exemple:server:koa": "DEBUG='gql-ws* server*' node --harmony --experimental-specifier-resolution=node example/server/koa.js",
     "lint": "eslint --color .",
@@ -37,8 +38,9 @@
     "ws": "^7.2.3"
   },
   "devDependencies": {
-    "@hydre/doubt": "^2.0.11",
+    "@hydre/doubt": "^3.2.0",
     "babel-eslint": "^10.1.0",
+    "casual": "^1.6.2",
     "eslint": "^6.8.0",
     "eslint-config-adjunct": "^4.1.0",
     "eslint-config-airbnb-base": "^14.1.0",

@@ -1,10 +1,11 @@
 type Query {
 	hello(name: String!): String!
+	hello_user(user: User!): String!
 	me: User
 }
 
 type User {
-	sayHello(to: String!): String!
+	name: String!
 }
 
 type Mutation {

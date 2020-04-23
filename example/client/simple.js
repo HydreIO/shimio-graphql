@@ -6,7 +6,7 @@ import { Client } from '../../src'
 const log = debug('client').extend(`${Math.random() * 9 + 1}`[0])
 const { URI = 'ws://localhost:3000/' } = process.env
 
-const client = new Client({ address: URI, options: { perMessageDeflate: false } })
+const client = new Client({ ws_options: { perMessageDeflate: false } })
 
 const query = gql`
   query($name: String!) {
@@ -25,7 +25,7 @@ const query = gql`
 `
 
 const main = async () => {
-  await client.connect()
+  await client.connect(URI)
   log('Hello!')
   const response = await client.query(query, { name: 'Sceat' })
   log('received: %O', await response.json())
