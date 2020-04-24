@@ -2,7 +2,7 @@ import doubt from '@hydre/doubt'
 import casual from 'casual'
 import graphql from 'graphql'
 import gql from 'graphql-tag'
-import { pipeline } from 'stream'
+import { PassThrough, pipeline } from 'stream'
 import tap_spec from 'tap-spec-emoji'
 
 import { Client, json, Server } from '../src'
@@ -38,6 +38,8 @@ const typeDefs = gql`
   }
 `
 
+const passthrough = new PassThrough()
+
 const resolvers = {
   hello({ user }) {
     return `Hello ${user.name}`
@@ -46,9 +48,13 @@ const resolvers = {
     return { name }
   },
   ping: 'pong',
+  sendMessage({ message }) {
+    passthrough.write(message)
+  },
   async *onMessage() {
     yield { onMessage: 'Hello' }
     yield { onMessage: 'Hello' }
+    yield* passthrough
   },
 }
 
@@ -104,6 +110,22 @@ doubt.onStart(() => { server.listen({ port, path: '/' }) })
     return message
   }).isEqualTo(PROCESSING_ERROR)
 
+  await 'a query can include multi blocs and will pipe results to the next one'.because(async () => {
+    const query = gql`
+      query get_name {
+        me {
+          name
+        }
+      }
+
+      query hello($me: User_input!) {
+        hello(user: $me)
+      }
+    `
+    const { data: { hello } } = await client.query(query).then(json)
+    return hello
+  }).isEqualTo(`Hello ${context.name}`)
+
   client.disconnect()
 })
 
@@ -120,10 +142,4 @@ doubt.onStart(() => { server.listen({ port, path: '/' }) })
       if (found > 1) return found
     }
   }).isEqualTo(2)
-
-  // await 'a client can unsubscribe'.because(async () => {
-  //   // eslint-disable-next-line no-unused-vars
-  //   for await (const {id} of await client.query('subscription { onMessage }')) {
-  //   }
-  // }).isEqualTo(2)
 })

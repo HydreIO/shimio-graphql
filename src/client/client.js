@@ -85,7 +85,7 @@ export default class Client {
     log('querying')
     this.#operation_id++
     // supporting plain string and graphql-tag
-    const { definitions } = query?.kind === 'Document' ? query : parse(query)
+    const { definitions } = query?.kind === 'Document' ? query : parse(query, { noLocation: true })
     // failing when some operations have no names, but allowing unnamed single operations
     const include_subscription = definitions.some(({ operation }) => operation === 'subscription')
     log('include subscription [%O]', include_subscription)

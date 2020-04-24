@@ -1,17 +1,21 @@
 type Query {
-	hello(name: String!): String!
-	hello_user(user: User!): String!
-	me: User
+  hello(user: User_input!): String!
+  me: User
+  ping: String!
+}
+
+input User_input {
+  name: String!
 }
 
 type User {
-	name: String!
+  name: String!
 }
 
 type Mutation {
-	sendMessage(message: String!): String!
+  sendMessage(message: String!): String!
 }
 
 type Subscription {
-	onMessage: String
+  onMessage: String
 }

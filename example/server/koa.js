@@ -3,6 +3,7 @@ import { readFileSync } from 'fs'
 import graphql from 'graphql'
 import Koa from 'koa'
 import { dirname, join } from 'path'
+import { PassThrough } from 'stream'
 import { fileURLToPath } from 'url'
 
 import { Server } from '../../src'
@@ -11,18 +12,30 @@ const log = debug('server')
 const { buildSchema } = graphql
 const directory = dirname(fileURLToPath(import.meta.url))
 
+const passthrough = new PassThrough()
+
+const rootValue = {
+  hello({ user }) {
+    return `Hello ${user.name}`
+  },
+  me(_, { name }) {
+    return { name }
+  },
+  ping: 'pong',
+  sendMessage({ message }) {
+    passthrough.write(message)
+  },
+  async *onMessage() {
+    yield { onMessage: 'Hello' }
+    yield { onMessage: 'Hello' }
+    yield* passthrough
+  },
+}
+
+
 const server = new Server({
   schema: buildSchema(readFileSync(join(directory, 'schema.gql'), 'utf-8')),
-  rootValue: {
-    hello: ({ name }) => `Hello ${name} !`,
-    me: { sayHello: ({ to }) => `hello ${to}` },
-    async *onMessage() {
-      while (true) {
-        await new Promise(resolve => setTimeout(resolve, 2000))
-        yield { onMessage: 'Hello' }
-      }
-    },
-  },
+  rootValue,
   ws_option: { perMessageDeflate: false },
   web_server: new Koa(),
 })

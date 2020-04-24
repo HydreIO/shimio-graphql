@@ -8,19 +8,25 @@ const { URI = 'ws://localhost:3000/' } = process.env
 
 const client = new Client({ ws_options: { perMessageDeflate: false } })
 
+// const query = gql`
+//   query($name: String!) {
+//     yay: hello(name: $name)
+//   }
+
+//   subscription {
+//     onMessage
+//   }
+
+//   query named($yay: String!) {
+//     me {
+//       sayHello(to: $yay)
+//     }
+//   }
+// `
+
 const query = gql`
-  query($name: String!) {
-    yay: hello(name: $name)
-  }
-
-  subscription {
-    onMessage
-  }
-
-  query named($yay: String!) {
-    me {
-      sayHello(to: $yay)
-    }
+  query hello {
+    ping @foo
   }
 `
 
