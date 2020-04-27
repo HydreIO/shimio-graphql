@@ -1,7 +1,7 @@
 {
-  "name": "@hydre/graphql-websocket",
+  "name": "@hydre/graphql-executor",
   "version": "1.0.6",
-  "description": "A Websocket GraphQL server and client",
+  "description": "A more flexible approach to GraphQL operations execution",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
@@ -14,23 +14,24 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hydreio/graphql-websocket.git"
+    "url": "git+https://github.com/hydreio/graphql-executor.git"
   },
   "author": "Hydre",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hydreio/graphql-websocket/issues"
+    "url": "https://github.com/hydreio/graphql-executor/issues"
   },
   "keywords": [
     "graphql",
-    "server",
-    "client",
-    "websocket"
+    "executor",
+    "defer",
+    "live",
+    "stream"
   ],
   "publishConfig": {
     "access": "public"
   },
-  "homepage": "https://github.com/hydreio/graphql-websocket#readme",
+  "homepage": "https://github.com/hydreio/graphql-executor#readme",
   "dependencies": {
     "debug": "^4.1.1",
     "graphql": "^15.0.0",
