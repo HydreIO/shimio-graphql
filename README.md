@@ -147,13 +147,13 @@ let's code golf the spec
    7. Execute each `satisfied_ops` in parallel
        - Each operation using variables are removed and inserted into `reactive_ops`
        - All others are freed
-       - `subscribe()` remain active until finished, restarted by a `varmap` update, or closed by a `pid` kill
+       - `subscribe()` remains active until finished, updated by a `varmap` update, or closed by a `pid` kill
    8.  Each time the `@export` directive is triggered, `varmap` is updated
        - this is basically client side scripting and come with caveats that'll need to be adressed
    9.  Pull newly satisfied operations by `varmap` from `reactive_ops` to `satisfied_ops`
-   10. While `satisfied_ops` is not empty, go to **7.**
+   10. While `satisfied_ops` is not empty, [go to **7.**]
    11. All done
-       - `pid` run in the background and update queries by watching `varmap`
+       - `pid` run in the background and update queries by watching `varmap` which [go to **7.**]
        - `pid` can be killed by the server or a client request
        - `streams` are fully handled in the background and can kill `pid` on any non GraphQL error
 
