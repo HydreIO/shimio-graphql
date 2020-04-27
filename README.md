@@ -166,7 +166,7 @@ underneath at a lower level to provide a different way of executing request.
 
 ## Should i use it in production ?
 
-The code is really light and we use it in production at @usidy it's pretty close to the official graphql implementation, your concerns should tend more on the conceptual design of such an experimental draft
+The code is really light and we use it in production at [@sidy](https://github.com/usidy) it's pretty close to the official graphql implementation, your concerns should tend more on the conceptual design of such an experimental draft
 as we have yet to observe every issues
 
 ## Exemple
