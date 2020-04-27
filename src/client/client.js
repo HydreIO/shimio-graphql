@@ -43,10 +43,12 @@ export default class Client {
             const operation_response = JSON.parse(chunk.toString())
             log('incomming operation %O', operation_response)
             const { id, operation_type, ...rest } = operation_response
-            if (operation_type === 'subscription') {
-              const through = this.#streams.get(id)
-              if (!through.write(rest)) await promisify(through.once.bind(through))('drain')
-            } else this.#emitter.emit(`${id}`, rest)
+            const through = this.#streams.get(id)
+            if (!through.write(rest)) await promisify(through.once.bind(through))('drain')
+            // if (operation_type === 'subscription') {
+            //   const through = this.#streams.get(id)
+            //   if (!through.write(rest)) await promisify(through.once.bind(through))('drain')
+            // } else this.#emitter.emit(`${id}`, rest)
           }
         } catch (error) {
           console.error(error)
@@ -87,20 +89,22 @@ export default class Client {
     // supporting plain string and graphql-tag
     const { definitions } = query?.kind === 'Document' ? query : parse(query, { noLocation: true })
     // failing when some operations have no names, but allowing unnamed single operations
-    const include_subscription = definitions.some(({ operation }) => operation === 'subscription')
-    log('include subscription [%O]', include_subscription)
+    // const include_subscription = definitions.some(({ operation }) => operation === 'subscription')
+    // log('include subscription [%O]', include_subscription)
 
-    const pass_through = include_subscription ? new PassThrough({ objectMode: true }) : Readable.from([])
-    if (include_subscription) this.#streams.set(this.#operation_id, pass_through)
+    // const pass_through = include_subscription ? new PassThrough({ objectMode: true }) : Readable.from([])
+    const pass_through = new PassThrough({ objectMode: true })
+    // if (include_subscription) this.#streams.set(this.#operation_id, pass_through)
+    this.#streams.set(this.#operation_id, pass_through)
 
     const query_blocs = definitions.map(operation_definition => stripIgnoredCharacters(print(operation_definition)))
     log('operation', inspect({ id: this.#operation_id, operations: query_blocs, variables }, false, null, true))
-    const result = once(this.#emitter, `${this.#operation_id}`)
+    // const result = once(this.#emitter, `${this.#operation_id}`)
 
     const serialized_query = JSON.stringify({ id: this.#operation_id, operations: query_blocs, variables })
     this.#ws.send(serialized_query)
     return {
-      json: async () => (await result)[0],
+      // json: async () => (await result)[0],
       async *[Symbol.asyncIterator]() {
         yield* pass_through
       },
