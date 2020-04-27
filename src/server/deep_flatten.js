@@ -27,9 +27,9 @@ const leaves = (o, parent) => {
   return Object.entries(o).map(([k, v]) => [].concat(v).map(e => leaves(e, k))).flat(Infinity)
 }
 
-export default flatten(object) {
-return leaves(object).map(Object.entries).reduce((object, [[key, value]]) => {
-  object[key] = key in object ? [].concat(object[key], value) : value
-  return object
-}, {})
+export default object => {
+  return leaves(object).map(Object.entries).reduce((object, [[key, value]]) => {
+    object[key] = key in object ? [].concat(object[key], value) : value
+    return object
+  }, {})
 }

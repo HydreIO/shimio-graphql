@@ -2,14 +2,13 @@ import debug from 'debug'
 import { on } from 'events'
 import http from 'http'
 import compose from 'koa-compose'
-import stream from 'stream'
+import { pipeline } from 'stream'
 import { promisify } from 'util'
 import WebSocket from 'ws'
 
 import Resolver from './resolver'
 
 const log = debug('gql-ws').extend('server')
-const pipeline = promisify(stream.pipeline)
 
 export default class {
   #ws_options
@@ -34,7 +33,7 @@ export default class {
   constructor({
     ws_options = { path: '/', perMessageDeflate: false, maxPayload: 500 },
     schema = (() => { throw new Error('Missing or invalid schema') })(),
-    rootValue = (() => { throw new Error('Missing or invalid resolvers') })(),
+    rootValue = {},
     context = {},
     web_server = http.createServer(),
     timeout = 30_000,
@@ -82,6 +81,7 @@ export default class {
         on(ws, 'message'),
         async function*(source) { yield* new Resolver(resolver_options)[Symbol.asyncIterator](source) },
         async source => { for await (const chunk of source) ws.send(chunk) },
+        () => { log_peer('disconnected') },
       )
     })
 
