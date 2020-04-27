@@ -114,7 +114,7 @@ let's code golf the spec
    - it may contains some `Mutations`
    - it may contains some `Fragments`
    - it may contains some `Subscription`
-2. Operations are resolved in parallel or sequencially when `exported` arguments are required
+2. Operations are resolved in parallel
 3. Execution order inside an operation doesn't change, still parallel for queries and sequencial for mutations
 4. Each Mutation and Query resolvers can expose 3 functions, all optionals
    - `build` which allow native query transforms, can be thinked of as a better dataLoader
@@ -144,15 +144,15 @@ let's code golf the spec
    5. Fail fast if any `reactive_ops` will never be satisfied by `export_varmap`
       - could be missing or cyclic dependencies
    6. Let `satisfied_ops` be the operations satisfied by `varmap`
-   8. Execute each `satisfied_ops` in parallel
+   7. Execute each `satisfied_ops` in parallel
        - Each operation using variables are removed and inserted into `reactive_ops`
        - All others are freed
        - `subscribe()` remain active until finished, restarted by a `varmap` update, or closed by a `pid` kill
-   9.  Each time the `@export` directive is triggered, `varmap` is updated
+   8.  Each time the `@export` directive is triggered, `varmap` is updated
        - this is basically client side scripting and come with caveats that'll need to be adressed
-   10. Pull newly satisfied operations by `varmap` from `reactive_ops` to `satisfied_ops`
-   11. While `satisfied_ops` is not empty, go to **7.**
-   12. All done
+   9.  Pull newly satisfied operations by `varmap` from `reactive_ops` to `satisfied_ops`
+   10. While `satisfied_ops` is not empty, go to **7.**
+   11. All done
        - `pid` run in the background and update queries by watching `varmap`
        - `pid` can be killed by the server or a client request
        - `streams` are fully handled in the background and can kill `pid` on any non GraphQL error
