@@ -3,8 +3,10 @@ env:
   es6: true
 extends:
   - eslint:recommended
-  - airbnb-base
-  - adjunct
+  - google
+  - prettier
+plugins:
+  - prettier
 globals:
   Atomics: readonly
   SharedArrayBuffer: readonly
@@ -20,8 +22,9 @@ rules:
     - error
     - unix
   quotes: ["warn", "single", { avoidEscape: true }]
-  semi: 0
-  no-use-extend-native/no-use-extend-native: 0
+  semi:
+    - warn
+    - never
   comma-dangle:
     - warn
     - always-multiline
@@ -31,23 +34,15 @@ rules:
     - never
   space-before-function-paren:
     ["warn", { anonymous: "never", named: "never", asyncArrow: "always" }]
-  func-names: 0
   no-param-reassign: ["error", { props: false }]
-  import/prefer-default-export: 0
   array-func/prefer-array-from: 0
   no-bitwise: 0
   no-console: 0
   lines-between-class-members: ["warn", always, { exceptAfterSingleLine: true }]
   consistent-return: 0
-  no-plusplus: 0
   import/no-extraneous-dependencies: 0
   generator-star-spacing: 0
   arrow-body-style: 2
-  no-await-in-loop: 0
-  no-case-declarations: 0
-  require-yield: 0
-  no-continue: 0
-  no-labels: 0
   arrow-parens:
     - error
     - as-needed
@@ -55,14 +50,11 @@ rules:
   object-curly-spacing:
     - error
     - always
-  max-len: ["error", { code: 200 }]
+  max-len: ["error", { code: 80 }]
   no-empty: ["error", { allowEmptyCatch: true }]
-  unicorn/no-unreadable-array-destructuring: 0
-  unicorn/filename-case: ["error", { case: "snakeCase" }]
   func-style:
     - error
     - expression
   import/no-named-as-default: 0
   no-restricted-syntax: 0
   camelcase: 0
-  unicorn/explicit-length-check: 0

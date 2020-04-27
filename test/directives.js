@@ -2,7 +2,7 @@ import debug from 'debug'
 import graphql from 'graphql'
 import { inspect } from 'util'
 
-const { parse, visit, validate, buildSchema } = graphql
+const { parse, visit, validate, buildSchema, buildASTSchema } = graphql
 const log = debug('ast')
 const log_node = log.extend('node')
 const log_key = log.extend('key')
@@ -10,8 +10,8 @@ const log_parent = log.extend('parent')
 const log_path = log.extend('path')
 const log_ancestors = log.extend('ancestors')
 
-const schema = /* GraphQL */`
-directive @unwind(_: Scalar) on QUERY | MUTATION | SUBSCRIPTION
+const schema = parse(/* GraphQL */`
+directive @unwind(_: String! as: String!) on QUERY | MUTATION | SUBSCRIPTION
 
 type Query {
   """
@@ -30,11 +30,11 @@ type User {
 #   ping
 # }
 
-`
+`)
 
 const query = parse(/* GraphQL */`
 
-query foo ($name: String!) @unwind(_: $names, as: "name") {
+query foo ($name: String!) @unwind(_: "names", as: "name")  {
   ping
 
   me {
@@ -59,6 +59,6 @@ query foo ($name: String!) @unwind(_: $names, as: "name") {
 //   // },
 // })
 log(inspect(query, false, null, true))
-log(validate(buildSchema(schema), query))
+log(validate(buildASTSchema(schema), query))
 // if (!valid.length) log(inspect(query, false, null, true))
 // else log.extend('schema')('%O', valid)

@@ -1,6 +1,7 @@
 import graphql from 'graphql'
 import graphql_error from 'graphql/error'
 import { pipeline } from 'stream'
+import { inspect } from 'util'
 
 import deep_flatten from './deep_flatten'
 import Processing_error from './processing_error'
@@ -97,7 +98,7 @@ export default class Resolver {
     const self = this
     yield* pipeline(
       tap(external_source, chunk => { this.#logger('processing chunk %O', chunk) }),
-      async function*(source) {
+      async source => {
         for await (const chunk of source) {
           try {
             let result
@@ -110,7 +111,8 @@ export default class Resolver {
 
                 case 'query':
                 case 'mutation':
-                  result = await self.process_query(processing_options)
+                  result = await self.process_subscription(processing_options)
+                  // result = await self.process_query(processing_options)
                   break
 
                 default:
@@ -118,12 +120,13 @@ export default class Resolver {
               }
             }
 
-            self.#logger('yielding %O', result)
-            yield JSON.stringify(result)
+            // self.#logger('yielding %O', result)
+            // yield JSON.stringify(result)
             self.#logger('chunk processed.')
           } catch (error) {
-            if (error instanceof GraphQLError) yield JSON.stringify(error)
-            else console.error(error)
+            console.log(error)
+            // if (error instanceof GraphQLError) yield JSON.stringify(error)
+            // else console.error(error)
           }
         }
       },

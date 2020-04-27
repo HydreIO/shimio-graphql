@@ -1,6 +1,7 @@
+
 type Query {
   hello(user: User_input!): String!
-  me: User
+  me: User!
   ping: String!
 }
 
@@ -8,8 +9,14 @@ input User_input {
   name: String!
 }
 
+type Post {
+  date: Int
+  author: [User]
+}
+
 type User {
-  name: String!
+  name: String
+  posts: [Post]
 }
 
 type Mutation {
@@ -17,5 +24,6 @@ type Mutation {
 }
 
 type Subscription {
+  me: User!
   onMessage: String
 }
