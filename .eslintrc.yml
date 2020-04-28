@@ -4,7 +4,6 @@ env:
 extends:
   - eslint:recommended
   - google
-  - prettier
 plugins:
   - prettier
 globals:
@@ -17,13 +16,15 @@ parserOptions:
   ecmaFeatures:
     legacyDecorators: true
 rules:
+  prettier/prettier:
+    - error
   indent: ["error", 2, { SwitchCase: 1 }]
   linebreak-style:
     - error
     - unix
   quotes: ["warn", "single", { avoidEscape: true }]
   semi:
-    - warn
+    - error
     - never
   comma-dangle:
     - warn
@@ -58,3 +59,4 @@ rules:
   import/no-named-as-default: 0
   no-restricted-syntax: 0
   camelcase: 0
+  no-multi-str: 0
