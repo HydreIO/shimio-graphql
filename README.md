@@ -45,6 +45,7 @@ tale as seen and narrated by myself, by trading off a stateless ecosystem.
 - [Usage](#usage)
   - [For servers](#for-servers)
   - [For tools maker](#for-tools-maker)
+- [Caveats](#caveats)
 
 ## Installation
 
@@ -181,3 +182,10 @@ as we have yet to observe every issues
 ### For servers
 
 ### For tools maker
+
+## Caveats
+
+The concept of a server side state initiated by a client must be analyzed
+and heavily restricted.
+
+there are many [solutions to explore](https://leapgraph.com/graphql-api-security)
