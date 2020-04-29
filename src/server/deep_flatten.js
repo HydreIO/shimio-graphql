@@ -23,13 +23,19 @@
 // }, {})
 
 const leaves = (o, parent) => {
-  if (typeof o !== 'object' || o === null) return { [parent]: o }
-  return Object.entries(o).map(([k, v]) => [].concat(v).map(e => leaves(e, k))).flat(Infinity)
+  if (typeof o !== 'object' || o === null) {
+    return {
+      [parent]: o,
+    }
+  }
+  return Object.entries(o).map(([k, v]) => [].concat(v).map(e => leaves(e, k)))
+      .flat(Infinity)
 }
 
 export default object => {
-  return leaves(object).map(Object.entries).reduce((object, [[key, value]]) => {
-    object[key] = key in object ? [].concat(object[key], value) : value
-    return object
-  }, {})
+  return leaves(object).map(Object.entries)
+      .reduce((object, [[key, value]]) => {
+        object[key] = key in object ? [].concat(object[key], value) : value
+        return object
+      }, {})
 }

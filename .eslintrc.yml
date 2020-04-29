@@ -2,61 +2,11 @@ env:
   node: true
   es6: true
 extends:
-  - eslint:recommended
-  - google
-plugins:
-  - prettier
+  - "@sidy/eslint-config-sidy"
 globals:
   Atomics: readonly
   SharedArrayBuffer: readonly
-parser: babel-eslint
+parser: babel-eslint # to use optional chaining and other cool stuff
 parserOptions:
   ecmaVersion: 2020
   sourceType: module
-  ecmaFeatures:
-    legacyDecorators: true
-rules:
-  prettier/prettier:
-    - error
-  indent: ["error", 2, { SwitchCase: 1 }]
-  linebreak-style:
-    - error
-    - unix
-  quotes: ["warn", "single", { avoidEscape: true }]
-  semi:
-    - error
-    - never
-  comma-dangle:
-    - warn
-    - always-multiline
-  default-case: ["error", { "commentPattern": "^skip\\sdefault" }]
-  array-bracket-spacing:
-    - warn
-    - never
-  space-before-function-paren:
-    ["warn", { anonymous: "never", named: "never", asyncArrow: "always" }]
-  no-param-reassign: ["error", { props: false }]
-  array-func/prefer-array-from: 0
-  no-bitwise: 0
-  no-console: 0
-  lines-between-class-members: ["warn", always, { exceptAfterSingleLine: true }]
-  consistent-return: 0
-  import/no-extraneous-dependencies: 0
-  generator-star-spacing: 0
-  arrow-body-style: 2
-  arrow-parens:
-    - error
-    - as-needed
-  object-curly-newline: ["error", { multiline: true }]
-  object-curly-spacing:
-    - error
-    - always
-  max-len: ["error", { code: 80 }]
-  no-empty: ["error", { allowEmptyCatch: true }]
-  func-style:
-    - error
-    - expression
-  import/no-named-as-default: 0
-  no-restricted-syntax: 0
-  camelcase: 0
-  no-multi-str: 0
