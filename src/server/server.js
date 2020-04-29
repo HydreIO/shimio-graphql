@@ -1,9 +1,15 @@
 import debug from 'debug'
-import { on } from 'events'
+import {
+  on,
+} from 'events'
 import http from 'http'
 import compose from 'koa-compose'
-import { pipeline } from 'stream'
-import { promisify } from 'util'
+import {
+  pipeline,
+} from 'stream'
+import {
+  promisify,
+} from 'util'
 import WebSocket from 'ws'
 
 import Resolver from './resolver'
@@ -31,8 +37,14 @@ export default class {
   * @param {(Object|Function)} [options.context={}] - the context object or as a function/async function to dynamically build it on every upgrade request
   */
   constructor({
-    ws_options = { path: '/', perMessageDeflate: false, maxPayload: 500 },
-    schema = (() => { throw new Error('Missing or invalid schema') })(),
+    ws_options = {
+      path: '/',
+      perMessageDeflate: false,
+      maxPayload: 500,
+    },
+    schema = (() => {
+      throw new Error('Missing or invalid schema')
+    })(),
     rootValue = {},
     context = {},
     web_server = http.createServer(),
@@ -67,21 +79,42 @@ export default class {
 
     // we prevent usage of those as it's up to the http server to decide
     // @see https://github.com/websockets/ws/blob/master/doc/ws.md#new-websocketserveroptions-callback
-    const { host, port, ...options } = this.#ws_options
-    const wss = new WebSocket.Server({ ...options, noServer: true })
+    const {
+      host, port, ...options
+    } = this.#ws_options
+    const wss = new WebSocket.Server({
+      ...options,
+      noServer: true,
+    })
 
-    wss.on('connection', (ws, { headers }, contextValue) => {
+    wss.on('connection', (ws, {
+      headers,
+    }, contextValue) => {
       const log_peer = log.extend(headers['sec-websocket-key'])
       ws.alive = true
-      ws.on('pong', () => { ws.alive = true })
+      ws.on('pong', () => {
+        ws.alive = true
+      })
       log_peer('connected!')
 
-      const resolver_options = { schema: this.#schema, contextValue, rootValue: this.#rootValue, log_peer, ws }
+      const resolver_options = {
+        schema: this.#schema,
+        contextValue,
+        rootValue: this.#rootValue,
+        log_peer,
+        ws,
+      }
       pipeline(
-        on(ws, 'message'),
-        async function*(source) { yield* new Resolver(resolver_options)[Symbol.asyncIterator](source) },
-        async source => { for await (const chunk of source) ws.send(chunk) },
-        () => { log_peer('disconnected') },
+          on(ws, 'message'),
+          function* (source) {
+            yield* new Resolver(resolver_options)[Symbol.asyncIterator](source)
+          },
+          async source => {
+            for await (const chunk of source) ws.send(chunk)
+          },
+          () => {
+            log_peer('disconnected')
+          },
       )
     })
 
@@ -101,7 +134,8 @@ export default class {
       try {
         await middleware(request_socket_head)
         const contextValue = await this.context(...request_socket_head)
-        const emit_connection = ws => wss.emit('connection', ws, request, contextValue)
+        const emit_connection = ws => wss
+            .emit('connection', ws, request, contextValue)
         log('authorizing peer to connect')
         wss.handleUpgrade(...request_socket_head, emit_connection)
       } catch (error) {
