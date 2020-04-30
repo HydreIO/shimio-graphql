@@ -1,6 +1,8 @@
 env:
   node: true
   es6: true
+plugins:
+  - unicorn
 extends:
   - "@sidy/eslint-config-sidy"
 globals:

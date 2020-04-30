@@ -5,10 +5,10 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "test": "node test/index.js",
+    "test": "xo && node test/index.js",
     "profile": "node --prof test/directives.js",
     "profile:flame": "node --prof-process --preprocess -j isolate*.log | flamebearer",
-    "lint": "eslint --color .",
+    "lint": "TERM='xterm-256color' xo .",
     "postversion": "git push && git push --tags"
   },
   "repository": {
@@ -42,7 +42,9 @@
     "@hydre/doubt": "^3.2.2",
     "@sidy/eslint-config-sidy": "^1.2.2",
     "babel-eslint": "^10.1.0",
+    "benchmark": "^2.1.4",
     "eslint": "^6.8.0",
+    "eslint-plugin-unicorn": "^19.0.1",
     "graphql-tag": "^2.10.3",
     "supports-color": "^7.1.0",
     "tap-spec-emoji": "^6.0.7"
