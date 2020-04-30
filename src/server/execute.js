@@ -4,6 +4,7 @@ import graphql, {
 import graphql_execution_execute from 'graphql/execution/execute'
 import graphql_execution_values from 'graphql/execution/values'
 import invariant from 'invariant'
+import topological_matrix from './topological_matrix.js'
 
 const {
   getVariableValues,
@@ -11,10 +12,14 @@ const {
 
 const {
   assertValidExecutionArguments,
+  collectFields,
+  getFieldDef,
 } = graphql_execution_execute
 
 const {
-  validateSchema, Kind, GraphQLError, visit,
+  validateSchema, Kind,
+  GraphQLError, visit,
+  getOperationRootType,
 } = graphql
 
 export default ({
@@ -24,8 +29,10 @@ export default ({
   rootValue,
   contextValue,
   variableValues, // 2. Let `varmap` be the cached query Variables
-  fieldResolver,
-  typeResolver,
+  resolvers,
+  defaultBuildResolver,
+  defaultResolver,
+  defaultSubscriptionResolver,
 }) => {
   invariant(!isNaN(pid), 'Must provide a process id')
   invariant(document, 'Must provide document')
@@ -127,7 +134,7 @@ export default ({
                   },
                 },
               }) => value)
-            .every(name => name in variableValues)
+              .every(name => name in variableValues)
           // 6. Let `satisfied_ops` be the operations satisfied by `varmap`
           if (is_satisfied) satisfied_ops.add(definition)
           // 4. Let `reactive_ops` be the operations not satisfied by `varmap`
@@ -144,4 +151,31 @@ export default ({
   }
 
   // 7. Execute each `satisfied_ops` in parallel
+  for (const operation of satisfied_ops) {
+    const type = getOperationRootType(schema, operation)
+    const execution_context = {
+      schema,
+      fragments,
+      rootValue,
+      contextValue,
+      operation,
+      variableValues,
+    }
+    const fields = collectFields(
+        execution_context,
+        type,
+        operation.selectionSet,
+    )
+    const is_reactive = !!operation.variableDefinitions.length
+    switch (operation.operation) {
+      case 'query':
+        for (const [ field_name, [ field_node ] ] of Object.entries(fields)) {
+
+        }
+        break
+
+      default:
+        break
+    }
+  }
 }

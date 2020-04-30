@@ -4,9 +4,11 @@ import graphql_values from 'graphql/execution/values.js'
 import {
   inspect,
 } from 'util'
+import extact_operations from '../src/server/extract_operations.js'
 
 const {
-  parse, visit, validate, buildSchema, buildASTSchema,
+  parse, visit, validate, buildSchema, buildASTSchema, execute,
+  GraphQLObjectType, GraphQLString, GraphQLSchema,
 } = graphql
 
 const {
@@ -24,11 +26,6 @@ const log_path = log.extend('path')
 const log_ancestors = log.extend('ancestors')
 
 const schema = /* GraphQL */ `
-  directive @unwind(
-    _: String
-    as: String
-  ) on QUERY | FIELD_DEFINITION | FRAGMENT_SPREAD | INLINE_FRAGMENT | FRAGMENT_DEFINITION | MUTATION | SUBSCRIPTION
-
   directive @export(as: String) on FIELD
 
   type Query {
@@ -51,17 +48,16 @@ const schema = /* GraphQL */ `
 
 const query2 = parse(
     /* GraphQL */ `
-    query foo ($pepeg: String!) {
-      me @export {
-        ... on User {
-          name(as: $pepeg) @export
-        }
-        ...test
+    query foo ($pepeg: String)  {
+      me {
+        name @export
       }
     }
 
-    fragment test on User {
-      frag: name @export
+    query bar  {
+      me {
+        name @export (as: "pepeg")
+      }
     }
   `,
     {
@@ -69,59 +65,41 @@ const query2 = parse(
     },
 )
 
-visit(query2, {
-  OperationDefinition(node, key, parent, path) {
-    // log.extend('operation')('%i', node)
-    const {
-      directives,
-    } = node
 
-    if (!directives?.length) return
-
-    const exported = directives.find(
-        ({
-          name: {
-            value,
-          },
-        }) => value === 'export',
-    )
-
-    if (!exported) return
-
-    const {
-      name: {
-        value: field_name,
-      },
-    } = node
-
-    const [export_argument] = exported.arguments
-
-    // either we have an `as` argument,
-    // or we fallback to the field name
-    const {
-      value: {
-        value: export_name,
-      },
-    } = export_argument || {
-      value: {
-        value: field_name,
-      },
-    }
-    $pepeg
-    // if (value !== 'export') return
-    // log('%i', export_name)
+// Define the User type
+const userType = new GraphQLObjectType({
+  name: 'User',
+  fields: {
+    name: {
+      type: GraphQLString,
+      resolve: () => 'salut',
+    },
   },
-  // enter(node, key, parent, path, ancestors) {
-  // },
-  // leave(node, key, parent, path, ancestors) {
-  // },
 })
-log('%i', getVariableValues(
-    buildSchema(schema),
-    query2.definitions[0].variableDefinitions, {
-      pepeg: 'pepeg',
-      mario: `it's a me`,
-    }))
-log(validate(buildASTSchema(parse(schema)), query2))
+
+// Define the Query type
+const queryType = new GraphQLObjectType({
+  name: 'Query',
+  fields: {
+    me: {
+      type: userType,
+      extensions: [function build() { }],
+      resolve: () => ({}),
+    },
+  },
+})
+
+// const result = execute(new GraphQLSchema({
+//   query: queryType,
+// }), query2, {}, {}, {
+//   pepeg: 'pepeg',
+//   mario: `it's a me`,
+// })
+log('%i', extact_operations(buildASTSchema(parse(schema)), query2))
+// log('%i', parse(schema))
+
+// log('%i', getDirectiveValues(parse(schema).definitions[0], query2))
+
+// log(validate(buildASTSchema(parse(schema)), query2))
 // if (!valid.length) log(inspect(query, false, null, true))
 // else log.extend('schema')('%O', valid)
