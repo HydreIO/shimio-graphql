@@ -30,6 +30,9 @@
 //   [ { give: 2, need: 4 } ],
 //   [ { give: 5, need: 2 }, { give: 3, need: 2 } ]
 // ]
+//
+// TODO: detect when a value need something that isn't exported
+// currently is only verified by the graphql validation
 export default ({
   values,
   depends_on,
