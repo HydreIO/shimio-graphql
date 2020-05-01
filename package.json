@@ -5,10 +5,10 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "test": "xo && node test/index.js",
+    "test": "node test/index.js",
     "profile": "node --prof test/directives.js",
     "profile:flame": "node --prof-process --preprocess -j isolate*.log | flamebearer",
-    "lint": "TERM='xterm-256color' xo .",
+    "lint": "eslint --color .",
     "postversion": "git push && git push --tags"
   },
   "repository": {

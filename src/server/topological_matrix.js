@@ -32,7 +32,7 @@
 // ]
 //
 // TODO: detect when a value need something that isn't exported
-// currently is only verified by the graphql validation
+// currently it is only verified by the graphql validation through `getVariableValues`
 export default ({
   values,
   depends_on,
@@ -67,5 +67,7 @@ export default ({
   }
 
   values.forEach(value => visitor()(value))
-  return result
+  return {
+    result,
+  }
 }
