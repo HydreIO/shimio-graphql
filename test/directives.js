@@ -4,7 +4,8 @@ import graphql_values from 'graphql/execution/values.js'
 import {
   inspect,
 } from 'util'
-import extact_operations from '../src/server/extract_operations.js'
+import build_context from '../src/server/build_context.js'
+import topo from '../src/server/topological_matrix.js'
 
 const {
   parse, visit, validate, buildSchema, buildASTSchema, execute,
@@ -48,15 +49,21 @@ const schema = /* GraphQL */ `
 
 const query2 = parse(
     /* GraphQL */ `
-    query foo ($pepeg: String)  {
+    query foo ($bar: String)  {
       me {
-        name @export
+        name
       }
     }
 
-    query bar  {
+    query foo  {
       me {
-        name @export (as: "pepeg")
+        name @export (as: "bar")
+      }
+    }
+
+    query bar ($name: String)  {
+      me {
+        name @export (as: "foo")
       }
     }
   `,
@@ -95,8 +102,41 @@ const queryType = new GraphQLObjectType({
 //   pepeg: 'pepeg',
 //   mario: `it's a me`,
 // })
-log('%i', extact_operations(buildASTSchema(parse(schema)), query2))
-// log('%i', parse(schema))
+
+const variables = {
+  bar: 'w',
+}
+
+const {
+  contexts,
+} = build_context(buildASTSchema(parse(schema)), query2, variables)
+const sorted = topo({
+  values: contexts.map(({
+    exported_variables,
+    needed_variables,
+  }) => ({
+    gives: exported_variables,
+    wants: needed_variables,
+  })),
+  depends_on({
+    gives: first_exports,
+    wants: first_needs,
+  }, {
+    gives: second_exports,
+    wants: second_needs,
+  }) {
+    return first_needs.some(needed => {
+      if (Object.keys(variables).includes(needed)) return false
+      return second_exports.includes(needed)
+    })
+  },
+})
+
+log('%i', sorted)
+
+// log('%i', new GraphQLSchema({
+// query: queryType,
+// }).getQueryType().getFields())
 
 // log('%i', getDirectiveValues(parse(schema).definitions[0], query2))
 
