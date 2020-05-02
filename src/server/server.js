@@ -102,13 +102,10 @@ export default class {
         contextValue,
         rootValue: this.#rootValue,
         log_peer,
-        ws,
       }
       pipeline(
           on(ws, 'message'),
-          function* (source) {
-            yield* new Resolver(resolver_options)[Symbol.asyncIterator](source)
-          },
+          new Resolver(resolver_options).generate,
           async source => {
             for await (const chunk of source) ws.send(chunk)
           },
