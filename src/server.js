@@ -84,6 +84,7 @@ export default class {
       // throwing off both vars
       // eslint-disable-next-line no-unused-vars
       host,
+      // eslint-disable-next-line no-unused-vars
       port,
       ...options
     } = this.#ws_options

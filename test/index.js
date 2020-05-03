@@ -22,7 +22,6 @@ const {
   buildASTSchema,
 } = graphql
 const port = 3000
-const PROCESSING_ERROR = 'processing error'
 const typeDefs = gql`
   type Query {
     hello(user: User_input!): String!
@@ -186,7 +185,7 @@ doubt.onStart(() => {
         const {
           errors,
         } = await client
-            .query('mutation($message: String){sendMessage(message: $message)}', {
+            .query('mutation($message:String){sendMessage(message:$message)}', {
               message: 0,
             })
             .then(json)
