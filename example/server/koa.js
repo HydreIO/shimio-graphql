@@ -1,71 +1,67 @@
 import debug from 'debug'
-import { readFileSync } from 'fs'
-import graphql from 'graphql'
+import {
+  readFileSync,
+} from 'fs'
 import gqltools from 'graphql-tools'
 import Koa from 'koa'
-import { dirname, join } from 'path'
-import { PassThrough } from 'stream'
-import { fileURLToPath } from 'url'
-import { inspect } from 'util'
+import {
+  dirname, join,
+} from 'path'
+import {
+  PassThrough,
+} from 'stream'
+import {
+  fileURLToPath,
+} from 'url'
 
-import { Server } from '../../src'
+import {
+  Server,
+} from '../../src/index.js'
 
 const log = debug('server')
-const { buildSchema, subscribe } = graphql
-const { makeExecutableSchema } = gqltools
+const {
+  makeExecutableSchema,
+} = gqltools
 const directory = dirname(fileURLToPath(import.meta.url))
-
-const passthrough = new PassThrough()
-
+const passthrough = new PassThrough({
+  objectMode: true,
+})
 const server = new Server({
   schema: makeExecutableSchema({
-    typeDefs: readFileSync(join(directory, 'schema.gql'), 'utf-8'),
+    typeDefs : readFileSync(join(directory, 'schema.gql'), 'utf-8'),
     resolvers: {
       Query: {
-        me: {
-          async *subscribe() {
-            await new Promise(resolve => setTimeout(resolve, 1000))
-            yield { med: { name: 'pepeg' } }
-          },
+        me() {
+          return {
+            name: 'pepeg',
+          }
         },
-        // ping: 'pong',
-        async *ping() {
-          await new Promise(resolve => setTimeout(resolve, 1000))
-          yield { ping: 'pong' }
-          await new Promise(resolve => setTimeout(resolve, 1000))
-          yield { ping: 'pong' }
+        ping() {
+          return 'ping pong chin chan'
         },
       },
       Mutation: {
-        sendMessage({ message }) {
-          passthrough.write(message)
+        sendMessage(_, {
+          message,
+        }) {
+          passthrough.write({
+            onMessage: message,
+          })
+          return 'message sent!'
         },
       },
       Subscription: {
-        async *me() {
-          yield { name: 'fdp' }
-        },
-        async *onMessage() {
-          yield { onMessage: 'Hello' }
-          yield { onMessage: 'Hello' }
-          yield* passthrough
-        },
-      },
-      User: {
-        posts(...arguments_) {
-          // log('arguments is', inspect(arguments_, false, null, true))
-          return [{ date: 1 }]
-        },
-      },
-      Post: {
-        author() {
-          log('yield author')
-          return [{ name: 'pepeg', posts: [] }]
+        onMessage: {
+          async *subscribe() {
+            yield* passthrough
+          },
         },
       },
     },
   }),
-  ws_option: { perMessageDeflate: false },
+  ws_option: {
+    perMessageDeflate: false,
+  },
   web_server: new Koa(),
 })
 
@@ -74,4 +70,9 @@ server.use(async (context, next) => {
   await next()
 })
 
-server.listen({ port: 3000, path: '/' }, () => { log('listening on :3000') })
+server.listen({
+  port: 3000,
+  path: '/',
+}, () => {
+  log('listening on :3000')
+})
