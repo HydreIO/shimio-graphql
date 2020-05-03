@@ -186,10 +186,9 @@ doubt.onStart(() => {
         const {
           errors,
         } = await client
-            .query('mutation($message: String){sendMessage(message: $message)}',
-                {
-                  message: 0,
-                })
+            .query('mutation($message: String){sendMessage(message: $message)}', {
+              message: 0,
+            })
             .then(json)
         throw errors[0]
       })

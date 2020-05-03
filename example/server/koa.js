@@ -73,6 +73,7 @@ server.use(async (context, next) => {
 server.listen({
   port: 3000,
   path: '/',
-}, () => {
+},
+() => {
   log('listening on :3000')
 })

@@ -17,9 +17,9 @@ const client = new Node_Client({
     perMessageDeflate: false,
   },
 })
-const query = /* GraphQL */`
+const query = /* GraphQL */ `
   query pang {
-     ping
+    ping
   }
 
   mutation hello {
