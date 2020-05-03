@@ -113,8 +113,7 @@ export default class {
 
       ws.alive = true
       ws.force_terminate = () => {
-        for (const stream of user_streams.values())
-          stream.end()
+        for (const stream of user_streams.values()) stream.end()
         ws.terminate()
         log_peer('terminated')
       }

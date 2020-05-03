@@ -1,7 +1,6 @@
 import debug from 'debug'
 import {
-  EventEmitter,
-  on,
+  EventEmitter, on,
 } from 'events'
 import graphql from 'graphql'
 import {
@@ -15,8 +14,7 @@ import invariant from 'invariant'
 
 const log = debug('gql-ws').extend('client')
 const {
-  stripIgnoredCharacters,
-  parse,
+  stripIgnoredCharacters, parse,
 } = graphql
 const async_pipeline = promisify(pipeline)
 const DEFAULT_TIMEOUT = 31_000
@@ -101,8 +99,7 @@ export default class Client {
   }
 
   async query(query, variables = {}) {
-    invariant(typeof query === 'string',
-        'The query is not a String')
+    invariant(typeof query === 'string', 'The query is not a String')
 
     // fail fast
     parse(query)

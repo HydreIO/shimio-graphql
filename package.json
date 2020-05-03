@@ -11,6 +11,7 @@
     "profile": "node --prof test/directives.js",
     "profile:flame": "node --prof-process --preprocess -j isolate*.log | flamebearer",
     "format": "prettier-eslint $PWD/\"**/*.js\" --write",
+    "format:check": "prettier-eslint $PWD/\"**/*.js\" --list-different",
     "lint": "eslint --color .",
     "postversion": "git push && git push --tags"
   },
