@@ -1,5 +1,9 @@
-export { default as Client } from './client/client'
-export { default as Server } from './server/server'
+export {
+  default as Node_Client,
+} from './n_client.js'
+export {
+  default as Server,
+} from './server.js'
 
 /**
  * small utility to consume a query response and
@@ -9,4 +13,4 @@ export { default as Server } from './server/server'
  * const data = await query().then(json)
  * ```
  */
-export const json = async query_response => query_response.json()
+export const json = query_response => query_response.json()
