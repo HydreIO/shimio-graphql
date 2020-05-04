@@ -5,14 +5,14 @@ import {
 } from 'util'
 
 import {
-  Node_Client,
+  Client,
 } from '../../src/index.js'
 
 const log = debug('client').extend(casual.username)
 const {
   URI = 'ws://localhost:3000/',
 } = process.env
-const client = new Node_Client({
+const client = new Client({
   ws_options: {
     perMessageDeflate: false,
   },
