@@ -1,6 +1,6 @@
 export {
-  default as Node_Client,
-} from './n_client.js'
+  default as Client,
+} from './client.js'
 export {
   default as Server,
 } from './server.js'

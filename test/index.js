@@ -9,7 +9,7 @@ import {
 import tap_spec from 'tap-spec-emoji'
 
 import {
-  Node_Client, json, Server,
+  Client, json, Server,
 } from '../src/index.js'
 
 pipeline(
@@ -87,7 +87,7 @@ const server = new Server({
   context,
   timeout: 100,
 })
-const client = new Node_Client({
+const client = new Client({
   ws_options: {
     perMessageDeflate: false,
   },
