@@ -23,7 +23,6 @@ export default class {
   #web_server
 
   #middleware = []
-  #context_is_static
   #timeout
 
   /**
@@ -58,8 +57,6 @@ export default class {
     this.#web_server = web_server
     this.#context = context
     this.#timeout = timeout
-
-    this.#context_is_static = typeof context === 'object'
   }
 
   /**
@@ -67,7 +64,7 @@ export default class {
    * @param {(Object | Function | AsyncFunction)} context
    */
   context(...parameters) {
-    if (this.#context_is_static) return this.#context
+    if (typeof context === 'object') return this.#context
     return this.#context(...parameters)
   }
 
@@ -81,10 +78,7 @@ export default class {
     // we prevent usage of those as it's up to the http server to decide
     // @see https://github.com/websockets/ws/blob/master/doc/ws.md#new-websocketserveroptions-callback
     const {
-      // throwing off both vars
-      // eslint-disable-next-line no-unused-vars
       host,
-      // eslint-disable-next-line no-unused-vars
       port,
       ...options
     } = this.#ws_options
