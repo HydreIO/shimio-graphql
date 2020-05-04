@@ -22,6 +22,7 @@
 - [Installation](#installation)
 - [Quick start](#quick-start)
 - [Documentation](#documentation)
+- [Client browser support](#client-browser-support)
 
 ## Installation
 
@@ -33,3 +34,12 @@ npm install @hydre/graphql-websocket
 coming soon
 
 ## Documentation
+
+
+## Client browser support
+
+- Legal browsers aka Chrome and Firefox, (also edge but meh)
+- Should work in safari even if i don't want to admit it.. (fuck off)
+
+I specially use the `Reflect` object to ban Internet explorer from
+using this royalty grade graphql client
