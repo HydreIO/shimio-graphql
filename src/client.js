@@ -1,11 +1,9 @@
 import debug from 'debug'
 import {
-  EventEmitter, on,
+  on,
 } from 'events'
 import graphql from 'graphql'
-import {
-  PassThrough, pipeline,
-} from 'stream'
+import which_stream from './stream.js'
 import {
   promisify,
 } from 'util'
@@ -16,8 +14,24 @@ const log = debug('gql-ws').extend('client')
 const {
   stripIgnoredCharacters, parse,
 } = graphql
-const async_pipeline = promisify(pipeline)
 const DEFAULT_TIMEOUT = 31_000
+const util_promisify =
+  fn =>
+    (...parameters) =>
+      new Promise(callback => {
+        Reflect.apply(
+            fn, fn, [...parameters, callback],
+        )
+      })
+
+// Hate doing that but as i don't want to write 2 clients file
+// for either node and the browser i kinda hack my way into it
+// by using a runtime resolved instance of stream
+// which will be node streams in node
+// and the readable-stream package in the browser
+// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line init-declarations
+let stream
 
 export default class Client {
   #ws
@@ -25,8 +39,6 @@ export default class Client {
   #timeout
   #options
   #protocols
-
-  #emitter = new EventEmitter()
   #operation_id = 0
 
   /**
@@ -48,6 +60,11 @@ export default class Client {
   }
 
   async pipe_streams() {
+    // let's get our streams gentlemens
+    stream = await which_stream()
+    // === end hack /shrug
+    const async_pipeline = util_promisify(stream.pipeline)
+
     await async_pipeline(on(this.#ws, 'message'), async source => {
       try {
         for await (const chunk of source) {
@@ -106,7 +123,7 @@ export default class Client {
 
     log('querying')
     const operation_id = this.#operation_id++
-    const pass_through = new PassThrough({
+    const pass_through = new stream.PassThrough({
       objectMode: true,
     })
     const serialized_query = JSON.stringify({
