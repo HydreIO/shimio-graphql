@@ -2,10 +2,9 @@
   "name": "@hydre/graphql-websocket",
   "version": "1.0.6",
   "description": "A blazing fast graphql websocket server and client",
-  "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "test": "node test/index.js --trace-warnings",
+    "test": "node test/index.js",
     "example:server:koa": "node example/server/koa.js",
     "example:client:simple": "node example/client/simple.js",
     "profile": "node --prof test/directives.js",
@@ -36,7 +35,9 @@
   "homepage": "https://github.com/hydreio/graphql-websocket#readme",
   "dependencies": {
     "@hydre/graphql-batch-executor": "^1.1.5",
+    "core-js": "^3.6.5",
     "debug": "^4.1.1",
+    "event-iterator": "^1.2.0",
     "graphql": "^15.0.0",
     "invariant": "^2.2.4",
     "koa-compose": "^4.1.0",

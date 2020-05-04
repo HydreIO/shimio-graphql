@@ -64,7 +64,7 @@ export default class {
    * @param {(Object | Function | AsyncFunction)} context
    */
   context(...parameters) {
-    if (typeof context === 'object') return this.#context
+    if (typeof this.#context === 'object') return this.#context
     return this.#context(...parameters)
   }
 

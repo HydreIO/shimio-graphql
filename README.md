@@ -31,6 +31,13 @@ npm install @hydre/graphql-websocket
 ```
 
 ## Quick start
+
+```js
+import Server from '@hydre/graphql-websocket/server'
+import Client from '@hydre/graphql-websocket/client/dom'
+import Client from '@hydre/graphql-websocket/client/node'
+```
+
 coming soon
 
 ## Documentation
