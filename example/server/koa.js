@@ -14,9 +14,7 @@ import {
   fileURLToPath,
 } from 'url'
 
-import {
-  Server,
-} from '../../src/index.js'
+import Server from '../../src/server.js'
 
 const log = debug('server')
 const {

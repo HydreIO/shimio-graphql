@@ -4,9 +4,7 @@ import {
   inspect,
 } from 'util'
 
-import {
-  Client,
-} from '../../src/index.js'
+import Client from '../../src/client/node.js'
 
 const log = debug('client').extend(casual.username)
 const {

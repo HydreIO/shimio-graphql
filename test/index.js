@@ -7,10 +7,8 @@ import {
   PassThrough, pipeline,
 } from 'stream'
 import tap_spec from 'tap-spec-emoji'
-
-import {
-  Client, json, Server,
-} from '../src/index.js'
+import Server from '../src/server.js'
+import Client from '../src//client/node.js'
 
 pipeline(
     doubt.stream(), tap_spec(), process.stdout, error => {
@@ -18,6 +16,7 @@ pipeline(
     },
 )
 
+const json = query_response => query_response.json()
 const {
   buildASTSchema,
 } = graphql
