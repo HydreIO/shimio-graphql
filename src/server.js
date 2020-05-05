@@ -108,7 +108,7 @@ export default class {
       ws.force_terminate = () => {
         for (const stream of user_streams.values()) stream.end()
         ws.terminate()
-        log_peer('terminated')
+        log_peer('client disconnected')
       }
 
       ws.on('pong', () => {

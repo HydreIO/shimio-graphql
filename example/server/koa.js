@@ -24,6 +24,7 @@ const directory = dirname(fileURLToPath(import.meta.url))
 const passthrough = new PassThrough({
   objectMode: true,
 })
+const WAIT = 150
 const server = new Server({
   schema: makeExecutableSchema({
     typeDefs : readFileSync(join(directory, 'schema.gql'), 'utf-8'),
@@ -51,7 +52,10 @@ const server = new Server({
       Subscription: {
         onMessage: {
           async *subscribe() {
-            yield* passthrough
+            for await (const chunk of passthrough) {
+              await new Promise(resolve => setTimeout(resolve, WAIT))
+              yield chunk
+            }
           },
         },
       },
