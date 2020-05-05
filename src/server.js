@@ -78,9 +78,7 @@ export default class {
     // we prevent usage of those as it's up to the http server to decide
     // @see https://github.com/websockets/ws/blob/master/doc/ws.md#new-websocketserveroptions-callback
     const {
-      host,
-      port,
-      ...options
+      host, port, ...options
     } = this.#ws_options
     const wss = new WebSocket.Server({
       ...options,
@@ -129,15 +127,17 @@ export default class {
           async function *(source) {
             for await (const chunk of source) {
               const {
-                id: operation_id, document, variables, unsub,
+                id: operation_id, document, variables,
               } = JSON.parse(chunk.toString())
 
-              if (unsub) {
+              // in case we already know this operation we end it
+              // this could be an unsubscribe request from the client
+              // or a simple mistake.
+              // in any case we don't want duplicated operations
+              if (user_streams.has(operation_id)) {
                 const stream = user_streams.get(operation_id)
-                if (stream) {
-                  log_peer('stream %s was terminated', operation_id)
-                  stream.end()
-                }
+                log_peer('operation %O was terminated', operation_id)
+                stream.end()
 
                 continue
               }
@@ -154,8 +154,6 @@ export default class {
             for await (const {
               id: stream_id, stream,
             } of source) {
-              const existing_stream = user_streams.get(stream_id)
-              if (existing_stream) existing_stream.end()
               user_streams.set(stream_id, stream)
 
               pipeline(
@@ -168,20 +166,16 @@ export default class {
                       }
 
                       const {
-                        id: query_id,
-                        operation_type,
-                        operation_name,
-                        data,
-                        errors,
+                        operation_type, operation_name, data, errors,
                       } = chunk
                       log_peer(
-                          'sending %O[%O]: %O',
+                          'sending <%O|%O> : %O',
                           operation_type,
                           operation_name,
                     errors?.length ? errors : data,
                       )
                       ws.send(JSON.stringify({
-                        id: query_id,
+                        id: stream_id,
                         operation_type,
                         operation_name,
                         data,
@@ -190,13 +184,18 @@ export default class {
                     }
                   },
                   error => {
+                    ws.send(JSON.stringify({
+                      id : stream_id,
+                      end: true,
+                    }))
                     if (error) console.error(error)
                     else log_peer('operation terminated')
                   },
               )
             }
           },
-          () => {
+          error => {
+            if (error) console.error(error)
             log_peer('disconnected')
           },
       )
