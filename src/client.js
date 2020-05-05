@@ -34,16 +34,8 @@ export default (PassThrough, WebSocket) =>
     async connect() {
       this.ws = new WebSocket(this.address)
       await new Promise((resolve, reject) => {
-        this.ws.addEventListener(
-            'open', resolve, {
-              once: true,
-            },
-        )
-        this.ws.addEventListener(
-            'error', reject, {
-              once: true,
-            },
-        )
+        this.ws.addEventListener('open', resolve)
+        this.ws.addEventListener('error', reject)
       })
       log('client ready')
     }

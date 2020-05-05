@@ -26,15 +26,20 @@ const query = /* GraphQL */ `
     onMessage
   }
 `
+const END = 5000
 const main = async () => {
   await client.connect()
   log('Hello!')
   const response = await client.query(query)
+
+  setTimeout(() => {
+    response.end() // unsubscribe from operation
+  }, END)
+
   for await (const m of response) {
     log('received', inspect(
         m, false, Infinity, true,
     ))
-    response.end() // unsubscribe from operation
   }
 
   client.disconnect()
