@@ -21,6 +21,8 @@
 
 - [Installation](#installation)
 - [Quick start](#quick-start)
+  - [Server](#server)
+  - [Client](#client)
 - [Documentation](#documentation)
 - [Client browsers support](#client-browsers-support)
 
@@ -32,10 +34,36 @@ npm install @hydre/graphql-websocket
 
 ## Quick start
 
+### Server
 ```js
 import Server from '@hydre/graphql-websocket/server'
-import Client from '@hydre/graphql-websocket/client/dom'
-import Client from '@hydre/graphql-websocket/client/node'
+// coming soon
+```
+
+### Client
+
+The client can run either in node or the browser.
+You have to provide a PassThrough and a WebSocket implementation
+
+- Node
+```js
+import { PassThrough } from 'stream'
+// import PassThrough from 'minipass' // better
+import WebSocket from 'ws'
+import make_client from '@hydre/graphql-websocket/client'
+
+const Client = make_client(PassThrough, WebSocket)
+const service_a_client = new Client('ws://service-a')
+```
+
+- Browser
+```js
+import { PassThrough } from 'readable-stream'
+import make_client from '@hydre/graphql-websocket/client'
+
+// WebSocket already exist in a browser
+const Client = make_client(PassThrough, WebSocket)
+const service_a_client = new Client('ws://service-a')
 ```
 
 coming soon
