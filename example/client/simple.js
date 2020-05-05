@@ -3,18 +3,15 @@ import casual from 'casual'
 import {
   inspect,
 } from 'util'
+import {
+  PassThrough,
+} from 'stream'
+import WebSocket from 'ws'
+import make_client from '../../src/client.js'
 
-import Client from '../../src/client/node.js'
-
+const Client = make_client(PassThrough, WebSocket)
 const log = debug('client').extend(casual.username)
-const {
-  URI = 'ws://localhost:3000/',
-} = process.env
-const client = new Client({
-  ws_options: {
-    perMessageDeflate: false,
-  },
-})
+const client = new Client('ws://localhost:3000/')
 const query = /* GraphQL */ `
   query pang {
     ping
@@ -30,14 +27,17 @@ const query = /* GraphQL */ `
   }
 `
 const main = async () => {
-  await client.connect(URI)
+  await client.connect()
   log('Hello!')
   const response = await client.query(query)
   for await (const m of response) {
     log('received', inspect(
         m, false, Infinity, true,
     ))
+    response.end() // unsubscribe from operation
   }
+
+  client.disconnect()
 }
 
 main()

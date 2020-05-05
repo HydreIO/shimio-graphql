@@ -4,11 +4,13 @@ import casual from 'casual'
 import graphql from 'graphql'
 import gql from 'graphql-tag'
 import {
-  PassThrough, pipeline,
+  pipeline,
 } from 'stream'
+import PassThrough from 'minipass'
 import tap_spec from 'tap-spec-emoji'
 import Server from '../src/server.js'
-import Client from '../src//client/node.js'
+import make_client from '../src/client.js'
+import WebSocket from 'ws'
 
 pipeline(
     doubt.stream(), tap_spec(), process.stdout, error => {
@@ -17,6 +19,7 @@ pipeline(
 )
 
 const json = query_response => query_response.json()
+const Client = make_client(PassThrough, WebSocket)
 const {
   buildASTSchema,
 } = graphql
@@ -86,12 +89,7 @@ const server = new Server({
   context,
   timeout: 100,
 })
-const client = new Client({
-  ws_options: {
-    perMessageDeflate: false,
-  },
-  timeout: 150,
-})
+const client = new Client(`ws://localhost:${ port }/`)
 
 doubt.onStart(() => {
   server.listen({
@@ -102,7 +100,7 @@ doubt.onStart(() => {
 
 'The server is a piece of art'.doubt(async () => {
   await 'a client can reach the server'
-      .because(async () => client.connect(`ws://localhost:${ port }/`))
+      .because(async () => client.connect())
       .pass()
 
   await 'a query return correct results'
@@ -198,7 +196,7 @@ doubt.onStart(() => {
 
 'The client is not vegan'.doubt(async () => {
   await 'a client can reach the server'
-      .because(async () => client.connect(`ws://localhost:${ port }/`))
+      .because(async () => client.connect())
       .pass()
 
   await 'a invalid graphql document throw a syntax error'
@@ -220,4 +218,6 @@ doubt.onStart(() => {
         return found
       })
       .isEqualTo(EXPECTED_UPDATES)
+
+  client.disconnect()
 })
