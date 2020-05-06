@@ -1,20 +1,22 @@
 import debug from 'debug'
 import graphql from 'graphql'
+import Event_Iterator from 'event-iterator'
 
 const log = debug('gql-ws').extend('client')
-const {
-  stripIgnoredCharacters, parse,
-} = graphql
+const { stripIgnoredCharacters } = graphql
+const { subscribe } = event_iterator
 const NORMAL_CLOSURE = 1000
 
-export default (PassThrough, WebSocket) =>
+export default (
+    WebSocket = WebSocket,
+    EventTarget = EventTarget,
+    Event = Event,
+) =>
   class Client {
-    // variables are initialized because they are private
-    // awaiting https://github.com/evanw/esbuild/issues/47
-    // to use the # notation
-    ws
-    operation_id = 0
-    address
+    #ws
+    #address
+    #emitter = new EventTarget()
+    #operation_id = 0
 
     /**
      * Create a graphql client
@@ -23,7 +25,7 @@ export default (PassThrough, WebSocket) =>
     constructor(address) {
       if (typeof address !== 'string')
         throw new TypeError(`The address must be a string`)
-      this.address = address
+      this.#address = address
     }
 
     /**
@@ -32,18 +34,26 @@ export default (PassThrough, WebSocket) =>
      * or it will throw an error
      */
     async connect() {
-      this.ws = new WebSocket(this.address)
+      this.#ws = new WebSocket(this.#address)
+      this.#ws.addEventListener('message', ({ data }) => {
+        const {
+          id, ...rest
+        } = JSON.parse(data.toString())
+        const event = new Event(`${ id }`, rest)
+
+        this.#emitter.dispatchEvent(event)
+      })
       await new Promise((resolve, reject) => {
-        this.ws.addEventListener('open', resolve)
-        this.ws.addEventListener('error', reject)
+        this.#ws.addEventListener('open', resolve)
+        this.#ws.addEventListener('error', reject)
       })
       log('client ready')
     }
 
     disconnect() {
-      if (!this.ws)
+      if (!this.#ws)
         throw new Error('You must connect before disconnecting u genius..')
-      this.ws.close(NORMAL_CLOSURE, 'closed by client')
+      this.#ws.close(NORMAL_CLOSURE, 'closed by client')
       log('disconnected')
     }
 
@@ -51,40 +61,36 @@ export default (PassThrough, WebSocket) =>
       if (typeof query !== 'string')
         throw new Error('The query is not a String')
 
-      // fail fast
-      parse(query)
       log('querying')
 
-      const operation_id = this.operation_id++
-      const pass_through = new PassThrough({
-        objectMode: true,
-      })
+      const operation_id = this.#operation_id++
       const serialized_query = JSON.stringify({
         id      : operation_id,
         document: stripIgnoredCharacters(query),
         variables,
       })
-      const {
-        ws,
-      } = this
-      const message_handler = ({
-        data,
+      const ws = this.#ws
+      const emitter = this.#emitter
+      const event_iterator = new Event_Iterator(({
+        push,
+        stop,
       }) => {
-        const operation_response = JSON.parse(data.toString())
-        const {
-          id, end,
-        } = operation_response
-        if (id !== operation_id) return
-        if (end) pass_through.end()
-        else pass_through.write(operation_response)
-      }
-      const cleanup = () => {
-        ws.removeEventListener('message', message_handler)
-      }
+        event_iterator.prototype.end = stop
 
-      ws.addEventListener('message', message_handler)
-      pass_through.on('end', cleanup)
-      pass_through.on('finish', cleanup)
+        const event = `${ operation_id }`
+        const listener = ({
+          end, ...rest
+        }) => {
+          if (end) stop()
+          else push(rest)
+        }
+
+        emitter.addEventListener(event, listener)
+        return () => {
+          emitter.removeEventListener(event, listener)
+        }
+      })
+
       ws.send(serialized_query)
 
       return {
@@ -92,7 +98,7 @@ export default (PassThrough, WebSocket) =>
          * @return the first response then end the operation
          */
         async json() {
-          for await (const result of pass_through) {
+          for await (const result of event_iterator) {
             // we force the server to not send anymore stuff
             this.end()
             return result
@@ -107,17 +113,15 @@ export default (PassThrough, WebSocket) =>
         end() {
           // by sending again the operation id
           // the server will end it
-          ws.send(JSON.stringify({
-            id: operation_id,
-          }))
-          pass_through.end()
+          ws.send(JSON.stringify({ id: operation_id }))
+          event_iterator.end()
           log('operation %O terminated', operation_id)
         },
         /**
          * allows for...of
          */
-        async *[Symbol.asyncIterator]() {
-          yield* pass_through
+        [Symbol.asyncIterator]() {
+          return event_iterator
         },
       }
     }
