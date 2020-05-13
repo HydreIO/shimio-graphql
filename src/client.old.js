@@ -1,15 +1,18 @@
 import debug from 'debug'
 import graphql from 'graphql'
-import Event_Iterator from 'event-iterator'
+import event_iterator from 'event-iterator'
 
 const log = debug('gql-ws').extend('client')
 const { stripIgnoredCharacters } = graphql
-const { subscribe } = event_iterator
+const { EventIterator } = event_iterator
 const NORMAL_CLOSURE = 1000
 
 export default (
+    // eslint-disable-next-line no-use-before-define
     WebSocket = WebSocket,
+    // eslint-disable-next-line no-use-before-define
     EventTarget = EventTarget,
+    // eslint-disable-next-line no-use-before-define
     Event = Event,
 ) =>
   class Client {
@@ -24,7 +27,7 @@ export default (
      */
     constructor(address) {
       if (typeof address !== 'string')
-        throw new TypeError(`The address must be a string`)
+        throw new TypeError('The address must be a string')
       this.#address = address
     }
 
@@ -34,6 +37,7 @@ export default (
      * or it will throw an error
      */
     async connect() {
+      if (this.#ws) throw new Error('You are already connected genius..')
       this.#ws = new WebSocket(this.#address)
       this.#ws.addEventListener('message', ({ data }) => {
         const {
@@ -52,14 +56,16 @@ export default (
 
     disconnect() {
       if (!this.#ws)
-        throw new Error('You must connect before disconnecting u genius..')
+        throw new Error('You must connect before disconnecting u idiot..')
       this.#ws.close(NORMAL_CLOSURE, 'closed by client')
+      this.#ws = undefined
       log('disconnected')
     }
 
     async query(query, variables = {}) {
       if (typeof query !== 'string')
         throw new Error('The query is not a String')
+      if (!this.#ws) throw new Error('The client is not connected')
 
       log('querying')
 
@@ -71,11 +77,10 @@ export default (
       })
       const ws = this.#ws
       const emitter = this.#emitter
-      const event_iterator = new Event_Iterator(({
-        push,
-        stop,
+      const iterator = new EventIterator(({
+        push, stop,
       }) => {
-        event_iterator.prototype.end = stop
+        iterator.prototype.end = stop
 
         const event = `${ operation_id }`
         const listener = ({
@@ -98,7 +103,7 @@ export default (
          * @return the first response then end the operation
          */
         async json() {
-          for await (const result of event_iterator) {
+          for await (const result of iterator) {
             // we force the server to not send anymore stuff
             this.end()
             return result
@@ -114,14 +119,14 @@ export default (
           // by sending again the operation id
           // the server will end it
           ws.send(JSON.stringify({ id: operation_id }))
-          event_iterator.end()
+          iterator.end()
           log('operation %O terminated', operation_id)
         },
         /**
          * allows for...of
          */
         [Symbol.asyncIterator]() {
-          return event_iterator
+          return iterator
         },
       }
     }

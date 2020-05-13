@@ -1,6 +1,7 @@
 name: CI
 
 on:
+  pull_request:
   push:
     branches:
       - edge
@@ -14,21 +15,34 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 14.2
       - run: npm i
-      - run: npm run format:check
       - run: npm run lint
       - run: npm test
 
-  publish-npm:
+  coverage:
     needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14.2
+      - run: npm i
+      - run: npm run coverage
+      - uses: codecov/codecov-action@v1
+
+  publish-npm:
+    needs:
+      - test
+      - coverage
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 14.2
           registry-url: https://registry.npmjs.org/
           scope: "@hydre"
       - run: npm ci
