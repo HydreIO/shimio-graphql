@@ -1,16 +1,17 @@
-<h1 align=center>@hydre/graphql-websocket</h1>
+<h1 align=center>@hydre/wuhan</h1>
 <p align=center>
-  <img src="https://img.shields.io/github/license/hydreio/graphql-websocket.svg?style=for-the-badge" />
-  <a href="https://www.npmjs.com/package/@hydre/graphql-websocket">
-    <img src="https://img.shields.io/npm/v/@hydre/graphql-websocket.svg?logo=npm&style=for-the-badge" />
+  <img src="https://img.shields.io/github/license/hydreio/wuhan.svg?style=for-the-badge" />
+  <img src="https://img.shields.io/codecov/c/github/hydreio/wuhan/edge?logo=codecov&style=for-the-badge"/>
+  <a href="https://www.npmjs.com/package/@hydre/wuhan">
+    <img src="https://img.shields.io/npm/v/@hydre/wuhan.svg?logo=npm&style=for-the-badge" />
   </a>
-  <img src="https://img.shields.io/npm/dw/@hydre/graphql-websocket?logo=npm&style=for-the-badge" />
-  <img src="https://img.shields.io/github/workflow/status/hydreio/graphql-websocket/CI?logo=Github&style=for-the-badge" />
+  <img src="https://img.shields.io/npm/dw/@hydre/wuhan?logo=npm&style=for-the-badge" />
+  <img src="https://img.shields.io/github/workflow/status/hydreio/wuhan/CI?logo=Github&style=for-the-badge" />
 </p>
 
-<h3 align=center>A blazing fast graphql websocket server and client</h3>
+<h3 align=center>A transform stream implementation as a GraphQL server and client</h3>
 
-- Node <kbd>14</kbd>
+- Node <kbd>14.2</kbd>
 - Concurrent batched operations leveraging async generators
 - Loadbalanced batched subscriptions
 - Koa-like Middlewares
@@ -29,7 +30,7 @@
 ## Installation
 
 ```sh
-npm install @hydre/graphql-websocket
+npm install @hydre/wuhan
 ```
 
 ## Quick start
@@ -50,7 +51,7 @@ You have to provide a PassThrough and a WebSocket implementation
 import { PassThrough } from 'stream'
 // import PassThrough from 'minipass' // better
 import WebSocket from 'ws'
-import make_client from '@hydre/graphql-websocket/client'
+import make_client from '@hydre/wuhan/client'
 
 const Client = make_client(PassThrough, WebSocket)
 const service_a_client = new Client('ws://service-a')
@@ -59,7 +60,7 @@ const service_a_client = new Client('ws://service-a')
 - Browser
 ```js
 import { PassThrough } from 'readable-stream'
-import make_client from '@hydre/graphql-websocket/client'
+import make_client from '@hydre/wuhan/client'
 
 // WebSocket already exist in a browser
 const Client = make_client(PassThrough, WebSocket)

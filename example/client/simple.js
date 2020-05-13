@@ -1,11 +1,7 @@
 import debug from 'debug'
 import casual from 'casual'
-import {
-  inspect,
-} from 'util'
-import {
-  PassThrough,
-} from 'stream'
+import { inspect } from 'util'
+import { PassThrough } from 'stream'
 import WebSocket from 'ws'
 import make_client from '../../src/client.js'
 
@@ -30,6 +26,7 @@ const END = 5000
 const main = async () => {
   await client.connect()
   log('Hello!')
+
   const response = await client.query(query)
 
   setTimeout(() => {

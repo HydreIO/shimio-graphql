@@ -1,29 +1,19 @@
 import debug from 'debug'
-import {
-  readFileSync,
-} from 'fs'
+import { readFileSync } from 'fs'
 import gqltools from 'graphql-tools'
 import Koa from 'koa'
 import {
   dirname, join,
 } from 'path'
-import {
-  PassThrough,
-} from 'stream'
-import {
-  fileURLToPath,
-} from 'url'
+import { PassThrough } from 'stream'
+import { fileURLToPath } from 'url'
 
 import Server from '../../src/server.js'
 
 const log = debug('server')
-const {
-  makeExecutableSchema,
-} = gqltools
+const { makeExecutableSchema } = gqltools
 const directory = dirname(fileURLToPath(import.meta.url))
-const passthrough = new PassThrough({
-  objectMode: true,
-})
+const passthrough = new PassThrough({ objectMode: true })
 const WAIT = 150
 const server = new Server({
   schema: makeExecutableSchema({
@@ -31,21 +21,15 @@ const server = new Server({
     resolvers: {
       Query: {
         me() {
-          return {
-            name: 'pepeg',
-          }
+          return { name: 'pepeg' }
         },
         ping() {
           return 'ping pong chin chan'
         },
       },
       Mutation: {
-        sendMessage(_, {
-          message,
-        }) {
-          passthrough.write({
-            onMessage: message,
-          })
+        sendMessage(_, { message }) {
+          passthrough.write({ onMessage: message })
           return 'message sent!'
         },
       },
@@ -61,9 +45,7 @@ const server = new Server({
       },
     },
   }),
-  ws_option: {
-    perMessageDeflate: false,
-  },
+  ws_option : { perMessageDeflate: false },
   web_server: new Koa(),
 })
 

@@ -17,6 +17,7 @@ export default class {
   #rootValue
   #context
   #web_server
+
   #middleware = []
   #timeout
 
