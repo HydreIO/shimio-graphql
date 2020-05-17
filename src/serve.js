@@ -29,8 +29,8 @@ const string_to_bytes = string => {
 
   return bytes
 }
-const consume_channel
-  = execute => channel => task(resolver => {
+const consume_channel = execute => channel =>
+  task(resolver => {
     channel.read().then(resolver.resolve)
   })
       .run()
@@ -38,19 +38,20 @@ const consume_channel
       .map(bytes_to_string)
       .chain(string => Result.try(JSON.parse(string)))
       .map(execute)
-      .chain(readable => task(resolver => {
-        pipeline(
-            readable,
-            async function *(source) {
-              for await (const chunk of source)
-                yield string_to_bytes(JSON.stringify(chunk))
-            },
-            channel.writable.bind(channel),
-            error => error ? resolver.reject(error) : resolver.resolve(),
-        )
-      })
-          .run()
-          .future())
+      .chain(readable =>
+        task(resolver => {
+          pipeline(
+              readable,
+              async function *(source) {
+                for await (const chunk of source)
+                  yield string_to_bytes(JSON.stringify(chunk))
+              },
+              channel.writable.bind(channel),
+              error => error ? resolver.reject(error) : resolver.resolve(),
+          )
+        })
+            .run()
+            .future())
       .listen({
         onRejected: reason => console.error(reason),
         onResolved: () => {
@@ -62,8 +63,7 @@ export default graphql_options => {
   const executor = new Executor(graphql_options)
 
   return async ({
-    ws,
-    next,
+    ws, next,
   }) => {
     ws.on(
         'channel',

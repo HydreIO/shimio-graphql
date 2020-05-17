@@ -17,7 +17,13 @@ const passthrough = new PassThrough({ objectMode: true })
 const WAIT = 150
 const server = new Server({
   schema: makeExecutableSchema({
-    typeDefs : readFileSync(join(directory, 'schema.gql'), 'utf-8'),
+    typeDefs: readFileSync(
+        join(
+            directory,
+            'schema.gql',
+        ),
+        'utf-8',
+    ),
     resolvers: {
       Query: {
         me() {
@@ -28,7 +34,9 @@ const server = new Server({
         },
       },
       Mutation: {
-        sendMessage(_, { message }) {
+        sendMessage(
+            _, { message },
+        ) {
           passthrough.write({ onMessage: message })
           return 'message sent!'
         },
@@ -37,7 +45,10 @@ const server = new Server({
         onMessage: {
           async *subscribe() {
             for await (const chunk of passthrough) {
-              await new Promise(resolve => setTimeout(resolve, WAIT))
+              await new Promise(resolve => setTimeout(
+                  resolve,
+                  WAIT,
+              ))
               yield chunk
             }
           },
@@ -54,10 +65,12 @@ server.use(async (context, next) => {
   await next()
 })
 
-server.listen({
-  port: 3000,
-  path: '/',
-},
-() => {
-  log('listening on :3000')
-})
+server.listen(
+    {
+      port: 3000,
+      path: '/',
+    },
+    () => {
+      log('listening on :3000')
+    },
+)

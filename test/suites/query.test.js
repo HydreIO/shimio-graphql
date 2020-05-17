@@ -50,16 +50,14 @@ export default class {
     const errors = [{ message: casual.sentence }]
 
     await pipeline(
-        stream
-            .Readable
-            .from([
-              JSON.stringify({
-                operation_type: 'query',
-                operation_name: 'foo',
-                data,
-                errors,
-              }),
-            ]),
+        stream.Readable.from([
+          JSON.stringify({
+            operation_type: 'query',
+            operation_name: 'foo',
+            data,
+            errors,
+          }),
+        ]),
         unpack,
         async source => {
           for await (const chunk of source) {
@@ -131,8 +129,7 @@ export default class {
             })
 
             const {
-              document,
-              variables: packed_variables,
+              document, variables: packed_variables,
             } = JSON.parse(chunk)
 
             affirm({

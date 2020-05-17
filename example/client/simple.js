@@ -5,7 +5,10 @@ import { PassThrough } from 'stream'
 import WebSocket from 'ws'
 import make_client from '../../src/client.js'
 
-const Client = make_client(PassThrough, WebSocket)
+const Client = make_client(
+    PassThrough,
+    WebSocket,
+)
 const log = debug('client').extend(casual.username)
 const client = new Client('ws://localhost:3000/')
 const query = /* GraphQL */ `
@@ -29,14 +32,23 @@ const main = async () => {
 
   const response = await client.query(query)
 
-  setTimeout(() => {
-    response.end() // unsubscribe from operation
-  }, END)
+  setTimeout(
+      () => {
+        response.end() // unsubscribe from operation
+      },
+      END,
+  )
 
   for await (const m of response) {
-    log('received', inspect(
-        m, false, Infinity, true,
-    ))
+    log(
+        'received',
+        inspect(
+            m,
+            false,
+            Infinity,
+            true,
+        ),
+    )
   }
 
 
