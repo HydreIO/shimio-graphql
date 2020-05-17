@@ -32,25 +32,23 @@
   },
   "homepage": "https://github.com/hydreio/wuhan#readme",
   "dependencies": {
-    "@hydre/graphql-batch-executor": "^1.2.1",
+    "@hydre/graphql-batch-executor": "^1.2.3",
+    "@hydre/shimio": "^1.2.1",
     "debug": "^4.1.1",
-    "event-iterator": "^1.2.0",
-    "graphql": "^15.0.0",
-    "koa-compose": "^4.1.0",
-    "ws": "^7.3.0"
+    "folktale": "^2.3.2",
+    "graphql": "^15.0.0"
   },
   "devDependencies": {
-    "@hydre/doubt": "^5.3.1",
-    "@sidy/eslint-config-sidy": "^1.4.1",
+    "@hydre/doubt": "^6.1.0",
+    "@sidy/eslint-config-sidy": "^1.4.8",
     "babel-eslint": "^10.1.0",
     "c8": "^7.1.2",
     "casual": "^1.6.2",
     "eslint": "^7.0.0",
-    "eslint-plugin-unicorn": "^19.0.1",
+    "eslint-plugin-unicorn": "^20.0.0",
     "graphql-tag": "^2.10.3",
     "graphql-tools": "^5.0.0",
     "koa": "^2.11.0",
-    "minipass": "^3.1.1",
     "prettier-eslint-cli": "^5.0.0",
     "supports-color": "^7.1.0",
     "tap-spec-emoji": "^6.1.2"

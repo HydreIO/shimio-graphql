@@ -2,7 +2,10 @@ import graphql from 'graphql'
 
 const { stripIgnoredCharacters } = graphql
 
-export default (query, variables = {}) => {
+export default (
+    query,
+    variables = {},
+) => {
   if (typeof query !== 'string')
     throw new Error('The query is not a String')
 
