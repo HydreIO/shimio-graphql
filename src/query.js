@@ -3,11 +3,9 @@ import graphql from 'graphql'
 const { stripIgnoredCharacters } = graphql
 
 export default (
-    query,
-    variables = {},
+    query, variables = {},
 ) => {
-  if (typeof query !== 'string')
-    throw new Error('The query is not a String')
+  if (typeof query !== 'string') throw new Error('The query is not a String')
 
   const serialized_query = JSON.stringify({
     document: stripIgnoredCharacters(query),

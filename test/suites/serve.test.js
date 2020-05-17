@@ -4,10 +4,6 @@ export default class {
   static invariants(affirmation) {
     const affirm = affirmation(1)
 
-    const server = serve
-
-    affirm({
-
-    })
+    affirm({})
   }
 }
