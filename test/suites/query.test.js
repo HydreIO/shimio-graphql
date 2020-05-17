@@ -1,5 +1,4 @@
-import query from '../../src/client.js'
-import { CallTracker } from 'assert'
+import query from '../../src/query.js'
 import stream from 'stream'
 import { promisify } from 'util'
 import casual from 'casual'
@@ -8,19 +7,11 @@ const pipeline = promisify(stream.pipeline)
 
 export default class {
   static name = 'Wuhan query'
-  static loop = 5
+  // static loop = 5
   static timeout = 50
 
-  #tracker = new CallTracker()
-
-  constructor(cleanup) {
-    cleanup(() => {
-      this.#tracker.verify()
-    })
-  }
-
-  types(assert) {
-    const affirm = this.#tracker.calls(assert, 3)
+  static types(assert) {
+    const affirm = assert(3)
 
     try {
       query()
@@ -52,8 +43,8 @@ export default class {
     })
   }
 
-  async ['unpacking datas'](assert) {
-    const affirm = this.#tracker.calls(assert, 5)
+  static async ['unpacking datas'](assert) {
+    const affirm = assert(5)
     const { unpack } = query('{ me { name } }')
     const data = { foo: casual.catch_phrase }
     const errors = [{ message: casual.sentence }]
@@ -120,12 +111,16 @@ export default class {
     )
   }
 
-  async ['packing datas'](assert) {
-    const affirm = this.#tracker.calls(assert, 3)
+  static async ['packing datas'](assert) {
+    const affirm = assert(3)
     const variables = { foo: [0] }
-    const { pack } = query('{ me { name } }', variables)
+    const { pack } = query(
+        '{ me { name } }',
+        variables,
+    )
 
-    await pipeline(pack,
+    await pipeline(
+        pack,
         async source => {
           for await (const chunk of source) {
             affirm({
@@ -156,6 +151,7 @@ export default class {
 
             return
           }
-        })
+        },
+    )
   }
 }
