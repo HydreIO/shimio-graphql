@@ -24,9 +24,7 @@ export default class {
       })
     }
 
-    const {
-      pack, unpack,
-    } = query('')
+    const { pack, unpack } = query('')
 
     affirm({
       that   : 'the query',
@@ -112,43 +110,35 @@ export default class {
   static async ['packing datas'](assert) {
     const affirm = assert(3)
     const variables = { foo: [0] }
-    const { pack } = query(
-        '{ me { name } }',
-        variables,
-    )
+    const { pack } = query('{ me { name } }', variables)
 
-    await pipeline(
-        pack,
-        async source => {
-          for await (const chunk of source) {
-            affirm({
-              that   : 'packing',
-              should : 'pass chunks through',
-              because: !!chunk,
-              is     : true,
-            })
+    await pipeline(pack, async source => {
+      for await (const chunk of source) {
+        affirm({
+          that   : 'packing',
+          should : 'pass chunks through',
+          because: !!chunk,
+          is     : true,
+        })
 
-            const {
-              document, variables: packed_variables,
-            } = JSON.parse(chunk)
+        const { document, variables: packed_variables } = JSON.parse(chunk)
 
-            affirm({
-              that   : 'packing',
-              should : 'minify the document',
-              because: document,
-              is     : '{me{name}}',
-            })
+        affirm({
+          that   : 'packing',
+          should : 'minify the document',
+          because: document,
+          is     : '{me{name}}',
+        })
 
-            affirm({
-              that   : 'packing',
-              should : 'pass the variables if any',
-              because: packed_variables,
-              is     : variables,
-            })
+        affirm({
+          that   : 'packing',
+          should : 'pass the variables if any',
+          because: packed_variables,
+          is     : variables,
+        })
 
-            return
-          }
-        },
-    )
+        return
+      }
+    })
   }
 }

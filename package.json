@@ -1,7 +1,7 @@
 {
-  "name": "@hydre/wuhan",
+  "name": "@hydre/shimio-graphql",
   "version": "1.0.6",
-  "description": "A transform stream implementation as a GraphQL server and client",
+  "description": "A GraphQL server and client built on Shimio",
   "type": "module",
   "scripts": {
     "test": "node test/index.js",
@@ -14,33 +14,31 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hydreio/wuhan.git"
+    "url": "git+https://github.com/hydreio/shimio-graphql.git"
   },
   "author": "Hydre",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hydreio/wuhan/issues"
+    "url": "https://github.com/hydreio/shimio-graphql/issues"
   },
   "keywords": [
     "graphql",
-    "stream",
+    "shimio",
     "server",
     "client"
   ],
   "publishConfig": {
     "access": "public"
   },
-  "homepage": "https://github.com/hydreio/wuhan#readme",
+  "homepage": "https://github.com/hydreio/shimio-graphql#readme",
   "dependencies": {
     "@hydre/graphql-batch-executor": "^1.2.3",
-    "@hydre/shimio": "^1.2.1",
-    "debug": "^4.1.1",
-    "folktale": "^2.3.2",
-    "graphql": "^15.0.0"
+    "graphql": "^15.0.0",
+    "folktale": "^2.3.2"
   },
   "devDependencies": {
     "@hydre/doubt": "^6.1.0",
-    "@sidy/eslint-config-sidy": "^1.4.8",
+    "@sidy/eslint-config-sidy": "^1.4.10",
     "babel-eslint": "^10.1.0",
     "c8": "^7.1.2",
     "casual": "^1.6.2",
@@ -48,7 +46,7 @@
     "eslint-plugin-unicorn": "^20.0.0",
     "graphql-tag": "^2.10.3",
     "graphql-tools": "^5.0.0",
-    "koa": "^2.11.0",
+    "koa": "^2.12.0",
     "prettier-eslint-cli": "^5.0.0",
     "supports-color": "^7.1.0",
     "tap-spec-emoji": "^6.1.2"
