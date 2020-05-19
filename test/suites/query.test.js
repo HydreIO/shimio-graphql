@@ -1,7 +1,6 @@
-import query from '../../src/query.js'
+import Query from '../../src/query.js'
 import stream from 'stream'
 import { promisify } from 'util'
-import casual from 'casual'
 
 const pipeline = promisify(stream.pipeline)
 
@@ -10,135 +9,89 @@ export default class {
   // static loop = 5
   static timeout = 50
 
+  #client
+
+  constructor() {
+    this.#client = {
+      open_channel: () => ({
+        passthrough: source => source,
+      }),
+    }
+  }
+
   static types(assert) {
     const affirm = assert(3)
+
+    try {
+      Query()
+    } catch (error) {
+      affirm({
+        that   : 'the query',
+        should : 'must have a client',
+        because: error.message,
+        is     : 'Missing client',
+      })
+    }
+
+    const query = Query(this.#client)
+
+    affirm({
+      that   : 'the query',
+      should : 'return a Generator',
+      because: query('')?.constructor.name,
+      is     : 'GeneratorFunction',
+    })
 
     try {
       query()
     } catch (error) {
       affirm({
         that   : 'the query',
-        should : 'take a string document',
+        should : 'must have a valid query string',
         because: error.message,
         is     : 'The query is not a String',
       })
     }
-
-    const { pack, unpack } = query('')
-
-    affirm({
-      that   : 'the query',
-      should : 'return a pack Generator',
-      because: pack.constructor.name,
-      is     : 'GeneratorFunction',
-    })
-
-    affirm({
-      that   : 'the query',
-      should : 'return an unpack AsyncGenerator',
-      because: unpack.constructor.name,
-      is     : 'AsyncGeneratorFunction',
-    })
   }
 
-  static async ['unpacking datas'](assert) {
-    const affirm = assert(5)
-    const { unpack } = query('{ me { name } }')
-    const data = { foo: casual.catch_phrase }
-    const errors = [{ message: casual.sentence }]
+  async ['passing datas'](assert) {
+    const affirm = assert(3)
+    const variables = { foo: [0] }
+    const query = Query(this.#client)
 
     await pipeline(
-        stream.Readable.from([
-          JSON.stringify({
-            operation_type: 'query',
-            operation_name: 'foo',
-            data,
-            errors,
-          }),
-        ]),
-        unpack,
+        query('{ me { name } }', variables),
         async source => {
           for await (const chunk of source) {
             affirm({
-              that   : 'unpacking',
+              that   : 'packing',
               should : 'pass chunks through',
               because: !!chunk,
               is     : true,
             })
 
             const {
-              operation_type,
-              operation_name,
-              data: received_data,
-              errors: received_errors,
-            } = JSON.parse(chunk.toString())
+              document,
+              variables: packed_variables,
+            } = JSON.parse(chunk)
 
             affirm({
-              that   : 'unpacking',
-              should : 'correctly expose the operation_type',
-              because: operation_type,
-              is     : 'query',
+              that   : 'packing',
+              should : 'minify the document',
+              because: document,
+              is     : '{me{name}}',
             })
 
             affirm({
-              that   : 'unpacking',
-              should : 'correctly expose the operation_name',
-              because: operation_name,
-              is     : 'foo',
-            })
-
-            affirm({
-              that   : 'unpacking',
-              should : 'correctly expose the data',
-              because: received_data,
-              is     : data,
-            })
-
-            affirm({
-              that   : 'unpacking',
-              should : 'correctly expose any errors',
-              because: received_errors,
-              is     : errors,
+              that   : 'packing',
+              should : 'pass the variables if any',
+              because: packed_variables,
+              is     : variables,
             })
 
             return
           }
         },
     )
-  }
-
-  static async ['packing datas'](assert) {
-    const affirm = assert(3)
-    const variables = { foo: [0] }
-    const { pack } = query('{ me { name } }', variables)
-
-    await pipeline(pack, async source => {
-      for await (const chunk of source) {
-        affirm({
-          that   : 'packing',
-          should : 'pass chunks through',
-          because: !!chunk,
-          is     : true,
-        })
-
-        const { document, variables: packed_variables } = JSON.parse(chunk)
-
-        affirm({
-          that   : 'packing',
-          should : 'minify the document',
-          because: document,
-          is     : '{me{name}}',
-        })
-
-        affirm({
-          that   : 'packing',
-          should : 'pass the variables if any',
-          because: packed_variables,
-          is     : variables,
-        })
-
-        return
-      }
-    })
   }
 }

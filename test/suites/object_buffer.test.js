@@ -7,8 +7,7 @@ export default class {
     const affirm = affirmation(3)
     const ltr = object_buffer.ltr({})
     const rtl = object_buffer.rtl(new ArrayBuffer(0))
-    const round_trip
-      = object_buffer.rtl(object_buffer.ltr({ foo: 'bar' }))
+    const round_trip = object_buffer.rtl(object_buffer.ltr({ foo: 'bar' }))
 
     affirm({
       that   : 'ltr',

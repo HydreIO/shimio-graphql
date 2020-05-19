@@ -36,7 +36,6 @@ const main = async () => {
   for await (const m of response)
     log('received', inspect(m, false, Infinity, true))
 
-
   client.disconnect()
 }
 
