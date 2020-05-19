@@ -2,7 +2,10 @@ import Result from 'folktale/result/index.js'
 import curry from 'folktale/core/lambda/curry.js'
 
 const to_code = char => char.charCodeAt(0)
-const from_char_code = curry(3, Reflect.apply)(String.fromCharCode)
+const from_char_code = curry(
+    3,
+    Reflect.apply,
+)(String.fromCharCode)
 const Iso = (ltr, rtl) => ({
   ltr,
   rtl,

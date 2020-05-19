@@ -15,7 +15,10 @@ const passthrough = new PassThrough({ objectMode: true })
 const WAIT = 150
 const server = new Server({
   schema: makeExecutableSchema({
-    typeDefs : readFileSync(join(directory, 'schema.gql'), 'utf-8'),
+    typeDefs: readFileSync(
+        join(directory, 'schema.gql'),
+        'utf-8',
+    ),
     resolvers: {
       Query: {
         me() {
@@ -35,7 +38,8 @@ const server = new Server({
         onMessage: {
           async *subscribe() {
             for await (const chunk of passthrough) {
-              await new Promise(resolve => setTimeout(resolve, WAIT))
+              await new Promise(resolve =>
+                setTimeout(resolve, WAIT))
               yield chunk
             }
           },
