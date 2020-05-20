@@ -4,8 +4,8 @@
   "description": "A GraphQL server and client built on Shimio",
   "type": "module",
   "scripts": {
-    "test": "node test/index.js",
-    "coverage": "c8 --check-coverage node test/index.js",
+    "test": "node --harmony-top-level-await test/index.js",
+    "coverage": "c8 --check-coverage node --harmony-top-level-await test/index.js",
     "lint": "prettier-eslint $PWD/\"**/*.js\" --print-width 60 --list-different && eslint --color .",
     "format": "prettier-eslint $PWD/\"**/*.js\" --print-width 60 --write",
     "postversion": "git push && git push --tags",
@@ -26,20 +26,34 @@
     "server",
     "client"
   ],
+  "babel": {
+    "parserOpts": {
+      "allowAwaitOutsideFunction": true
+    },
+    "plugins": [
+      "@babel/plugin-proposal-class-properties",
+      "@babel/plugin-proposal-numeric-separator",
+      "@babel/plugin-syntax-import-meta"
+    ]
+  },
   "publishConfig": {
     "access": "public"
   },
   "homepage": "https://github.com/hydreio/shimio-graphql#readme",
   "dependencies": {
-    "@hydre/graphql-batch-executor": "^1.2.3",
+    "@hydre/graphql-batch-executor": "^1.2.4",
     "graphql": "^15.0.0",
     "folktale": "^2.3.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.9.6",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-numeric-separator": "^7.8.3",
+    "@babel/plugin-syntax-import-meta": "^7.8.3",
     "@hydre/doubt": "^6.1.0",
-    "@hydre/shimio": "^1.2.4",
+    "@hydre/shimio": "^1.3.1",
     "@sidy/eslint-config-sidy": "^1.4.10",
-    "babel-eslint": "^10.1.0",
+    "babel-eslint": "^11.0.0-beta.2",
     "c8": "^7.1.2",
     "casual": "^1.6.2",
     "eslint": "^7.0.0",

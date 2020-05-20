@@ -16,21 +16,13 @@ globalThis.EventTarget = EventTarget
 // eslint-disable-next-line no-undef
 globalThis.Event = Event
 
-const main = async () => {
-  const { default: ServeSuite } = await import('./suites/serve.test.js')
+const { default: ServeSuite } = await import('./suites/serve.test.js')
 
-  pipeline(
-      await doubt(
-          QuerySuite,
-          IsoSuite,
-          ServeSuite,
-      ),
-      reporter(),
-      process.stdout,
-      error => {
-        if (error) console.error(error)
-      },
-  )
-}
-
-main()
+pipeline(
+    await doubt(QuerySuite, IsoSuite, ServeSuite),
+    reporter(),
+    process.stdout,
+    error => {
+      if (error) console.error(error)
+    },
+)
