@@ -8,9 +8,6 @@ const consume_channel = executor => channel =>
   fromPromise(channel.read())
       .map(array => array.buffer)
       .map(object_buffer.rtl)
-      .chain(x => Object.keys(x).length === 0
-      ? Future.rejected('Empty buffer')
-      : Future.of(x))
       .map(executor.execute.bind(executor))
       .toPromise()
 
@@ -25,7 +22,9 @@ export default graphql_options => async ({ ws }, next) => {
             yield new Uint8Array(object_buffer.ltr(chunk))
         },
         channel.writable.bind(channel),
-        () => {},
+        error => {
+          if (error) console.error(error)
+        },
     )
   })
   await next()
