@@ -31,10 +31,13 @@ export default (client = no_client()) => (
     yield uint8
   }
   const channel = client.open_channel()
+  const iterator = yield_query()
 
   return {
     async *listen() {
-      for await (const chunk of channel.passthrough(yield_query())) {
+      for await (const chunk of channel.passthrough(iterator)) {
+        if (!chunk) return
+
         const uint16 = new Uint16Array(chunk.buffer)
         const string = String.fromCharCode.apply(
             undefined,
@@ -46,6 +49,8 @@ export default (client = no_client()) => (
         // not reachable
       }
     },
-    stop: () => channel.close(),
+    stop: () => {
+      channel.close()
+    },
   }
 }

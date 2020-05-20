@@ -20,8 +20,8 @@
 
 - [Installation](#installation)
 - [Quick start](#quick-start)
-  - [Server](#server)
-  - [Client](#client)
+  - [Server exemple](#server-exemple)
+  - [Client example](#client-example)
 
 ## Installation
 
@@ -31,11 +31,122 @@ npm install @hydre/shimio-graphql
 
 ## Quick start
 
-### Server
+### Server exemple
 ```js
 import serve_graphql from '@hydre/shimio-graphql/serve.js'
-// coming soon
+import { readFileSync } from 'fs'
+import gqltools from 'graphql-tools'
+import { dirname, join } from 'path'
+import { PassThrough } from 'stream'
+import { fileURLToPath } from 'url'
+import { Server } from '@hydre/shimio'
+
+const { makeExecutableSchema } = gqltools
+const directory = dirname(fileURLToPath(import.meta.url))
+const WAIT = 150
+// see options in @hydre/shimio
+const server = new Server({
+  port       : 3000,
+  uws_options: {
+    idleTimeout: 5,
+  },
+})
+
+server.use(serve_graphql({
+  schema: makeExecutableSchema({
+    typeDefs: readFileSync(
+        join(directory, 'schema.gql'),
+        'utf-8',
+    ),
+    resolvers: {
+      Query: {
+        me() {
+          return { name: 'pepeg' }
+        },
+        ping() {
+          return 'ping pong chin chan'
+        },
+      },
+      Mutation: {
+        sendMessage(_, { message }, { through }) {
+          through.write({ onMessage: message })
+          return 'message sent!'
+        },
+      },
+      Subscription: {
+        onMessage: {
+          async *subscribe(_, __, { through }) {
+            for await (const chunk of through) {
+              await new Promise(resolve =>
+                setTimeout(resolve, WAIT))
+              yield chunk
+            }
+          },
+        },
+      },
+    },
+  }),
+  contextValue: () => ({
+    through: new PassThrough({ objectMode: true }),
+  }),
+}))
+
+await server.listen()
+console.log('running on :3000')
 ```
 
-### Client
+### Client example
+
+```js
+import debug from 'debug'
+import casual from 'casual'
+import { inspect } from 'util'
+import { Client } from '@hydre/shimio'
+import Query from '@hydre/shimio-graphql/query.js'
+
+// || ===========================================
+// || When running in nodejs you need to provide those 3 polyfills
+// || Browsers have these by default
+// ||
+import EventTarget from '@hydre/shimio/test/EventTarget.js'
+import Event from '@hydre/shimio/test/Event.js'
+import ws from 'ws'
+
+globalThis.WebSocket = ws
+globalThis.EventTarget = EventTarget
+globalThis.Event = Event
+// ||
+// || ===========================================
+
+// see options in @hydre/shimio
+const client = new Client({ host: 'ws://0.0.0.0:3000' })
+const query = Query(client)
+const END = 2000
+
+await client.connect()
+
+const { listen, stop } = await query(/* GraphQL */ `
+ query pang {
+   ping
+ }
+
+ mutation hello {
+   first: sendMessage(message: "howdy")
+   then: sendMessage(message: "pls sir show vagana")
+ }
+
+ subscription hey_listen {
+   onMessage
+ }
+`)
+
+setTimeout(() => {
+  stop() // unsubscribe from operation
+}, END)
+
+for await (const chunk of listen())
+  console.log('received', inspect(chunk, false, Infinity, true))
+
+client.disconnect()
+```
 

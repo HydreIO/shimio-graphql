@@ -3,5 +3,5 @@ type Query {
 }
 
 type Subscription {
-  onEvent: Int!
+  onEvent(num: Int!): Int!
 }
