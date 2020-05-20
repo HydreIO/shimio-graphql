@@ -22,9 +22,7 @@ export default graphql_options => async ({ ws }, next) => {
             yield new Uint8Array(object_buffer.ltr(chunk))
         },
         channel.writable.bind(channel),
-        error => {
-          if (error) console.error(error)
-        },
+        () => {},
     )
   })
   await next()
