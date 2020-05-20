@@ -1,6 +1,6 @@
 {
   "name": "@hydre/shimio-graphql",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A GraphQL server and client built on Shimio",
   "type": "module",
   "scripts": {
