@@ -1,4 +1,4 @@
-import serve_graphql from '../../src/serve.js'
+import { Serve } from '../../src/index.js'
 import Query from '../../src/query.js'
 import graphql from 'graphql'
 import { readFileSync } from 'fs'
@@ -51,7 +51,7 @@ export default class {
     const affirm = affirmation(1 + limit2 + limit3 + limit4 + limit5)
     const query = Query(this.#client)
     const query2 = Query(this.#client2)
-    const serve = serve_graphql({
+    const serve = Serve({
       schema, // schema
       rootValue, // optionnal
       contextValue: () => {}, // optionnal

@@ -1,4 +1,4 @@
-import Query from '../../src/query.js'
+import { Query } from '../../src/index.js'
 import stream from 'stream'
 import { promisify } from 'util'
 
