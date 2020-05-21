@@ -33,7 +33,7 @@ npm install @hydre/shimio-graphql
 
 ### Server exemple
 ```js
-import serve_graphql from '@hydre/shimio-graphql/serve.js'
+import { Serve } from '@hydre/shimio-graphql'
 import { readFileSync } from 'fs'
 import gqltools from 'graphql-tools'
 import { dirname, join } from 'path'
@@ -52,7 +52,7 @@ const server = new Server({
   },
 })
 
-server.use(serve_graphql({
+server.use(Serve({
   schema: makeExecutableSchema({
     typeDefs: readFileSync(
         join(directory, 'schema.gql'),
@@ -102,7 +102,7 @@ import debug from 'debug'
 import casual from 'casual'
 import { inspect } from 'util'
 import { Client } from '@hydre/shimio'
-import Query from '@hydre/shimio-graphql/query.js'
+import { Query } from '@hydre/shimio-graphql'
 
 // || ===========================================
 // || When running in nodejs you need to provide those 3 polyfills
