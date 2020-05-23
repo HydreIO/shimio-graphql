@@ -43,7 +43,7 @@
   },
   "homepage": "https://github.com/hydreio/shimio-graphql#readme",
   "dependencies": {
-    "@hydre/graphql-batch-executor": "^2.0.1",
+    "@hydre/graphql-batch-executor": "^2.0.2",
     "folktale": "^2.3.2",
     "graphql": "^15.0.0"
   },
