@@ -9,17 +9,6 @@ import { Server, Client } from '@hydre/shimio'
 const directory = dirname(fileURLToPath(import.meta.url))
 const { buildSchema } = graphql
 const schema = buildSchema(readFileSync(join(directory, 'schema.gql'), 'utf-8'))
-const rootValue = {
-  ping() {
-    return 'ping pong chin chan'
-  },
-  async *onEvent({ num }) {
-    for (;;) {
-      await new Promise(resolve => setTimeout(resolve, 1))
-      yield { onEvent: num }
-    }
-  },
-}
 
 export default class {
   static name = 'At you service lord king'
@@ -53,8 +42,21 @@ export default class {
     const query2 = Query(this.#client2)
     const serve = Serve({
       schema, // schema
-      rootValue, // optionnal
-      contextValue: () => {}, // optionnal
+      query: {
+        ping() {
+          return 'ping pong chin chan'
+        },
+      },
+      subscription: {
+        async *onEvent({ num }) {
+          for (;;) {
+            await new Promise(resolve =>
+              setTimeout(resolve, 1))
+            yield { onEvent: num }
+          }
+        },
+      },
+      context: () => {}, // optionnal
     })
 
     this.#server.use(serve)

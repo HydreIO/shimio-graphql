@@ -17,17 +17,16 @@ export default graphql_options => async (
   { ws, request },
   next,
 ) => {
-  const { contextValue } = graphql_options
+  const { context } = graphql_options
   const executor = new Executor({
     ...graphql_options,
-    ...typeof contextValue === 'function'
-      ? {
-        contextValue: contextValue({
+    context:
+      typeof context === 'function'
+        ? context({
           ws,
           request,
-        }),
-      }
-      : {},
+        })
+        : context,
   })
   const consume = consume_channel(executor.execute.bind(executor))
 
