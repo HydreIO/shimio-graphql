@@ -25,11 +25,15 @@ export default class {
       host: 'ws://0.0.0.0:3000',
     })
     this.#server = Server({
+      allow_upgrade: ({ context }) => {
+        context.ping_pong = 'ping pong chin chan'
+        return true
+      },
       on_socket: Serve({
         schema, // schema
         query: {
-          ping() {
-            return 'ping pong chin chan'
+          ping(_, { ping_pong }) {
+            return ping_pong
           },
         },
         subscription: {
@@ -41,7 +45,6 @@ export default class {
             }
           },
         },
-        context: () => {}, // optionnal
       }),
     })
     cleanup(async () => {

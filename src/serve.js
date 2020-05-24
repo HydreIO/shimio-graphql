@@ -13,18 +13,21 @@ const consume_channel = execute => channel =>
       .map(execute)
       .toPromise()
 
-export default graphql_options => (ws, request) => {
-  const { context } = graphql_options
+export default graphql_options => ({
+  socket,
+  request,
+  context,
+}) => {
   const executor = new Executor({
     ...graphql_options,
-    context:
-      typeof context === 'function'
-        ? context(request)
-        : context,
+    context: {
+      ...context,
+      request,
+    },
   })
   const consume = consume_channel(executor.execute.bind(executor))
 
-  ws.on('channel', async channel => {
+  socket.on('channel', async channel => {
     const through = await consume(channel)
 
     channel.cleanup(() => {

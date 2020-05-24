@@ -43,11 +43,12 @@ import graphql from 'graphql'
 
 const directory = dirname(fileURLToPath(import.meta.url))
 const WAIT = 150
-const file = readFileSync(
-    join(directory, 'schema.gql'),
-    'utf-8',
-)
+const file = readFileSync(join(directory, 'schema.gql'), 'utf-8')
 const server = Server({
+  allow_upgrade: ({ context }) => {
+    context.through = new PassThrough({ objectMode: true })
+    return true
+  },
   on_socket: Serve({
     schema: graphql.buildSchema(file),
     query : {
@@ -73,9 +74,6 @@ const server = Server({
         }
       },
     },
-    context: () => ({
-      through: new PassThrough({ objectMode: true }),
-    }),
   }),
 })
 

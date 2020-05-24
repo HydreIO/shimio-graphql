@@ -13,6 +13,10 @@ const file = readFileSync(
     'utf-8',
 )
 const server = Server({
+  allow_upgrade: ({ context }) => {
+    context.through = new PassThrough({ objectMode: true })
+    return true
+  },
   on_socket: Serve({
     schema: graphql.buildSchema(file),
     query : {
@@ -38,9 +42,6 @@ const server = Server({
         }
       },
     },
-    context: () => ({
-      through: new PassThrough({ objectMode: true }),
-    }),
   }),
 })
 
