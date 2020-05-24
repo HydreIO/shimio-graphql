@@ -1,5 +1,3 @@
-import debug from 'debug'
-import casual from 'casual'
 import { inspect } from 'util'
 import ws from 'ws'
 import { Client } from '@hydre/shimio'
@@ -16,14 +14,11 @@ globalThis.EventTarget = EventTarget
 // eslint-disable-next-line no-undef
 globalThis.Event = Event
 
-const log = debug('client').extend(casual.username)
 const client = new Client({ host: 'ws://0.0.0.0:3000' })
 const query = Query(client)
 const END = 2000
 
 await client.connect()
-
-log('Hello!')
 
 const { listen, stop } = await query(/* GraphQL */ `
   query pang {
@@ -41,12 +36,10 @@ const { listen, stop } = await query(/* GraphQL */ `
 `)
 
 setTimeout(() => {
-  log('unsubscribing')
   stop() // unsubscribe from operation
 }, END)
 
 for await (const m of listen())
-  log('received', inspect(m, false, Infinity, true))
+  console.log('received', inspect(m, false, Infinity, true))
 
-log('disconnecting')
 client.disconnect()

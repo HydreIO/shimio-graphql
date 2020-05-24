@@ -24,11 +24,30 @@ export default class {
     this.#client2 = new Client({
       host: 'ws://0.0.0.0:3000',
     })
-    this.#server = new Server({ port: 3000 })
-    cleanup(() => {
+    this.#server = Server({
+      on_socket: Serve({
+        schema, // schema
+        query: {
+          ping() {
+            return 'ping pong chin chan'
+          },
+        },
+        subscription: {
+          async *onEvent({ num }) {
+            for (;;) {
+              await new Promise(resolve =>
+                setTimeout(resolve, 1))
+              yield { onEvent: num }
+            }
+          },
+        },
+        context: () => {}, // optionnal
+      }),
+    })
+    cleanup(async () => {
       this.#client.disconnect()
       this.#client2.disconnect()
-      this.#server.stop()
+      await this.#server.close()
     })
   }
 
@@ -40,28 +59,8 @@ export default class {
     const affirm = affirmation(1 + limit2 + limit3 + limit4 + limit5)
     const query = Query(this.#client)
     const query2 = Query(this.#client2)
-    const serve = Serve({
-      schema, // schema
-      query: {
-        ping() {
-          return 'ping pong chin chan'
-        },
-      },
-      subscription: {
-        async *onEvent({ num }) {
-          for (;;) {
-            await new Promise(resolve =>
-              setTimeout(resolve, 1))
-            yield { onEvent: num }
-          }
-        },
-      },
-      context: () => {}, // optionnal
-    })
 
-    this.#server.use(serve)
-
-    await this.#server.listen()
+    await this.#server.listen(3000)
     await this.#client.connect()
     await this.#client2.connect()
 

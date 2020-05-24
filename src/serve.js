@@ -13,19 +13,13 @@ const consume_channel = execute => channel =>
       .map(execute)
       .toPromise()
 
-export default graphql_options => async (
-  { ws, request },
-  next,
-) => {
+export default graphql_options => (ws, request) => {
   const { context } = graphql_options
   const executor = new Executor({
     ...graphql_options,
     context:
       typeof context === 'function'
-        ? context({
-          ws,
-          request,
-        })
+        ? context(request)
         : context,
   })
   const consume = consume_channel(executor.execute.bind(executor))
@@ -46,5 +40,4 @@ export default graphql_options => async (
         channel.writable.bind(channel),
     )
   })
-  await next()
 }
