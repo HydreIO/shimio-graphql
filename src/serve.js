@@ -18,12 +18,14 @@ export default graphql_options => ({
   request,
   context,
 }) => {
+  const { context: per_op_context, ...options } = graphql_options
   const executor = new Executor({
-    ...graphql_options,
-    context: {
-      ...context,
+    ...options,
+    context: () => per_op_context({
+      socket,
       request,
-    },
+      context,
+    }),
   })
   const consume = consume_channel(executor.execute.bind(executor))
 

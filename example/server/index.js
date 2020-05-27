@@ -18,8 +18,9 @@ const server = Server({
     return true
   },
   on_socket: Serve({
-    schema: graphql.buildSchema(file),
-    query : {
+    context: ({ context }) => context,
+    schema : graphql.buildSchema(file),
+    query  : {
       me() {
         return { name: 'pepeg' }
       },

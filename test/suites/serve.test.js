@@ -30,8 +30,9 @@ export default class {
         return true
       },
       on_socket: Serve({
+        context: ({ context }) => context,
         schema, // schema
-        query: {
+        query  : {
           ping(_, { ping_pong }) {
             return ping_pong
           },

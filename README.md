@@ -38,18 +38,31 @@ import { dirname, join } from 'path'
 import { PassThrough } from 'stream'
 import { fileURLToPath } from 'url'
 import { Server } from '@hydre/shimio'
-import Serve from '../../src/serve.js'
+import { Serve } from '@hydre/shimio-graphql'
 import graphql from 'graphql'
 
 const directory = dirname(fileURLToPath(import.meta.url))
 const WAIT = 150
 const file = readFileSync(join(directory, 'schema.gql'), 'utf-8')
 const server = Server({
+  // context here is an empty object created by Shimio server
   allow_upgrade: ({ context }) => {
     context.through = new PassThrough({ objectMode: true })
     return true
   },
   on_socket: Serve({
+    context: async ({
+      // the raw upgraded socket
+      socket,
+      // the raw connection context (in allow_upgrade)
+      context,
+      // the raw first http request
+      request
+    }) => ({
+      // put whatever you want here
+      // this is to build a per-operation context
+      // each batch of queries will have a clean context
+    }),
     schema: graphql.buildSchema(file),
     query : {
       me() {
