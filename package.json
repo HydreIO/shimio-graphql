@@ -43,15 +43,15 @@
   },
   "homepage": "https://github.com/hydreio/shimio-graphql#readme",
   "dependencies": {
-    "@hydre/graphql-batch-executor": "^2.0.5",
+    "@hydre/graphql-batch-executor": "^2.0.6",
     "folktale": "^2.3.2",
     "graphql": "^15.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.10.0",
-    "@babel/plugin-proposal-class-properties": "^7.8.3",
-    "@babel/plugin-proposal-numeric-separator": "^7.8.3",
-    "@babel/plugin-syntax-import-meta": "^7.8.3",
+    "@babel/core": "^7.10.1",
+    "@babel/plugin-proposal-class-properties": "^7.10.1",
+    "@babel/plugin-proposal-numeric-separator": "^7.10.1",
+    "@babel/plugin-syntax-import-meta": "^7.10.1",
     "@hydre/doubt": "^6.1.0",
     "@hydre/shimio": "^2.2.5",
     "@sidy/eslint-config-sidy": "^1.4.12",

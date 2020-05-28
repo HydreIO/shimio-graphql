@@ -1,6 +1,5 @@
-import graphql from 'graphql'
+import { stripIgnoredCharacters } from 'graphql/index.mjs'
 
-const { stripIgnoredCharacters } = graphql
 const no_client = () => {
   throw new Error('Missing client')
 }
