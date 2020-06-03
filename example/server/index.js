@@ -4,7 +4,7 @@ import { PassThrough } from 'stream'
 import { fileURLToPath } from 'url'
 import { Server } from '@hydre/shimio'
 import Serve from '../../src/serve.js'
-import graphql from 'graphql'
+import { buildSchema } from 'graphql/index.mjs'
 
 const directory = dirname(fileURLToPath(import.meta.url))
 const WAIT = 150
@@ -19,7 +19,7 @@ const server = Server({
   },
   on_socket: Serve({
     context: ({ context }) => context,
-    schema : graphql.buildSchema(file),
+    schema : buildSchema(file),
     query  : {
       me() {
         return { name: 'pepeg' }
