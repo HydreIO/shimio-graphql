@@ -13,10 +13,11 @@ export default (client = no_client()) => (
   if (!client.connected)
     throw new Error('The client is not connected')
 
+  const document = stripIgnoredCharacters(query)
   const yield_query = function *() {
     const bytes = [
       ...JSON.stringify({
-        document: stripIgnoredCharacters(query),
+        document,
         variables,
       }),
     ].map(c => c.charCodeAt(0))
