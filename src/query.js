@@ -14,39 +14,40 @@ export default (client = no_client()) => (
     throw new Error('The client is not connected')
 
   const document = stripIgnoredCharacters(query)
-  const yield_query = function *() {
-    const bytes = [
-      ...JSON.stringify({
-        document,
-        variables,
-      }),
-    ].map(c => c.charCodeAt(0))
-    const uint16 = new Uint16Array(bytes)
-    const uint8 = new Uint8Array(
-        uint16.buffer,
-        uint16.byteOffset,
-        uint16.byteLength,
-    )
-
-    yield uint8
-  }
+  const bytes = [
+    ...JSON.stringify({
+      document,
+      variables,
+    }),
+  ].map(c => c.charCodeAt(0))
+  const uint16 = new Uint16Array(bytes)
+  const uint8 = new Uint8Array(
+      uint16.buffer,
+      uint16.byteOffset,
+      uint16.byteLength,
+  )
   const channel = client.open_channel()
-  const iterator = yield_query()
 
   return {
     async *listen() {
-      for await (const chunk of channel.passthrough(iterator)) {
-        if (!chunk) return
+      const write = channel.write(uint8)
 
-        const uint16 = new Uint16Array(chunk.buffer)
-        const string = String.fromCharCode.apply(
-            undefined,
-            uint16,
-        )
+      try {
+        for await (const chunk of channel.readable()) {
+          if (!chunk) return
 
-        yield JSON.parse(string)
-        /* c8 ignore next 2 */
-        // not reachable
+          const buffer = new Uint16Array(chunk.buffer)
+          const string = String.fromCharCode.apply(
+              undefined,
+              buffer,
+          )
+
+          yield JSON.parse(string)
+          /* c8 ignore next 2 */
+          // not reachable
+        }
+      } finally {
+        await write
       }
     },
     stop: () => {

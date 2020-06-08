@@ -97,7 +97,9 @@ export default class {
     const foo = async ({ listen, stop, limit, number }) => {
       let count = 0
 
-      for await (const { data } of listen()) {
+      const source = listen()
+
+      for await (const { data } of source) {
         affirm({
           that   : 'a graphql subscription',
           should : 'yield correct results',
@@ -106,7 +108,7 @@ export default class {
         })
         if (++count >= limit) {
           stop()
-          break
+          return
         }
       }
     }

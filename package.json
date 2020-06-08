@@ -5,13 +5,13 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "test": "node --harmony-top-level-await test/index.js",
-    "coverage": "c8 --check-coverage node --harmony-top-level-await test/index.js",
+    "test": "node --harmony-top-level-await --harmony-private-methods test/index.js",
+    "coverage": "c8 --check-coverage node --harmony-top-level-await --harmony-private-methods test/index.js",
     "lint": "prettier-eslint $PWD/\"**/*.js\" --print-width 60 --list-different && eslint --color .",
     "format": "prettier-eslint $PWD/\"**/*.js\" --print-width 60 --write",
     "postversion": "git push && git push --tags",
-    "example:server": "node --harmony-top-level-await example/server/index.js",
-    "example:client": "node --harmony-top-level-await example/client/index.js"
+    "example:server": "node --harmony-top-level-await --harmony-private-methods example/server/index.js",
+    "example:client": "node --harmony-top-level-await --harmony-private-methods example/client/index.js"
   },
   "repository": {
     "type": "git",
@@ -43,7 +43,7 @@
   },
   "homepage": "https://github.com/hydreio/shimio-graphql#readme",
   "dependencies": {
-    "@hydre/graphql-batch-executor": "^2.0.8",
+    "@hydre/graphql-batch-executor": "^2.0.9",
     "folktale": "^2.3.2",
     "graphql": "^15.1.0"
   },
@@ -53,7 +53,7 @@
     "@babel/plugin-proposal-numeric-separator": "^7.10.1",
     "@babel/plugin-syntax-import-meta": "^7.10.1",
     "@hydre/doubt": "^6.1.0",
-    "@hydre/shimio": "^2.2.15",
+    "@hydre/shimio": "^2.2.18",
     "@sidy/eslint-config-sidy": "^1.4.12",
     "babel-eslint": "^11.0.0-beta.2",
     "c8": "^7.1.2",

@@ -1,10 +1,10 @@
 import Executor from '@hydre/graphql-batch-executor'
 import Future from 'folktale/concurrency/future/index.js'
 import object_buffer from './object_buffer.js'
-import stream from 'stream'
+import { pipeline as pipe } from 'stream'
 import { promisify } from 'util'
 
-const pipeline = promisify(stream.pipeline)
+const pipeline = promisify(pipe)
 const { fromPromise } = Future
 const consume_channel = execute => channel =>
   fromPromise(channel.read())
@@ -34,19 +34,20 @@ export default graphql_options => ({
   const consume = consume_channel(executor.execute.bind(executor))
 
   socket.on('channel', async channel => {
-    const through = await consume(channel)
+    const stream = await consume(channel)
 
-    channel.cleanup(() => {
-      through.end()
+    await pipeline(stream, async source => {
+      let closing = false
+
+      for await (const chunk of source) {
+        const morphed = new Uint8Array(object_buffer.ltr(chunk))
+
+        if (closing) continue
+        if (!await channel.write(morphed)) {
+          closing = true
+          stream.end()
+        }
+      }
     })
-
-    await pipeline(
-        through,
-        async function *(source) {
-          for await (const chunk of source)
-            yield new Uint8Array(object_buffer.ltr(chunk))
-        },
-        channel.writable.bind(channel),
-    )
   })
 }

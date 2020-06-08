@@ -28,10 +28,17 @@ export default class {
       disconnect: () => {
         connected = false
       },
-      open_channel: () => ({
-        passthrough: source => source,
-        close      : () => {},
-      }),
+      open_channel: () => {
+        const through = new stream.PassThrough()
+
+        return {
+          write: through.write.bind(through),
+          async *readable() {
+            yield* through
+          },
+          close: () => {},
+        }
+      },
     }
   }
 
