@@ -37,8 +37,8 @@ import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { PassThrough } from 'stream'
 import { fileURLToPath } from 'url'
-import { Server } from '@hydre/shimio'
-import { Serve } from '@hydre/shimio-graphql'
+import Server from '@hydre/shimio/server'
+import Serve from '@hydre/shimio-graphql/serve'
 import graphql from 'graphql'
 
 const directory = dirname(fileURLToPath(import.meta.url))
@@ -100,20 +100,15 @@ console.log('running on :3000')
 import debug from 'debug'
 import casual from 'casual'
 import { inspect } from 'util'
-import { Client } from '@hydre/shimio'
-import { Query } from '@hydre/shimio-graphql'
+import Client from '@hydre/shimio/client'
+import Query from '@hydre/shimio-graphql/query'
 
 // || ===========================================
-// || When running in nodejs you need to provide those 3 polyfills
-// || Browsers have these by default
+// || When running in nodejs you need to provide a ws polyfill
+// || Browsers have it by default
 // ||
-import EventTarget from '@hydre/shimio/test/EventTarget.js'
-import Event from '@hydre/shimio/test/Event.js'
 import ws from 'ws'
-
 globalThis.WebSocket = ws
-globalThis.EventTarget = EventTarget
-globalThis.Event = Event
 // ||
 // || ===========================================
 

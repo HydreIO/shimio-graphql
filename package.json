@@ -13,6 +13,10 @@
     "example:server": "node --harmony-top-level-await --harmony-private-methods example/server/index.js",
     "example:client": "node --harmony-top-level-await --harmony-private-methods example/client/index.js"
   },
+  "exports": {
+    "./query": "./src/query.js",
+    "./serve": "./src/serve.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hydreio/shimio-graphql.git"
