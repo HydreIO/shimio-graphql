@@ -30,24 +30,17 @@ export default (client = no_client()) => (
 
   return {
     async *listen() {
-      const write = channel.write(uint8)
+      await channel.write(uint8)
+      for await (const chunk of channel.read) {
+        const buffer = new Uint16Array(chunk.buffer)
+        const string = String.fromCharCode.apply(
+            undefined,
+            buffer,
+        )
 
-      try {
-        for await (const chunk of channel.readable()) {
-          if (!chunk) return
-
-          const buffer = new Uint16Array(chunk.buffer)
-          const string = String.fromCharCode.apply(
-              undefined,
-              buffer,
-          )
-
-          yield JSON.parse(string)
-          /* c8 ignore next 2 */
-          // not reachable
-        }
-      } finally {
-        await write
+        yield JSON.parse(string)
+        /* c8 ignore next 2 */
+        // not reachable
       }
     },
     stop: () => {

@@ -1,4 +1,4 @@
-import { Query } from '../../src/index.js'
+import Query from '../../src/query.js'
 import stream from 'stream'
 import { promisify } from 'util'
 
@@ -33,9 +33,7 @@ export default class {
 
         return {
           write: through.write.bind(through),
-          async *readable() {
-            yield* through
-          },
+          read : through,
           close: () => {},
         }
       },

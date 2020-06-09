@@ -2,7 +2,7 @@ import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { PassThrough } from 'stream'
 import { fileURLToPath } from 'url'
-import { Server } from '@hydre/shimio'
+import Server from '@hydre/shimio/server'
 import Serve from '../../src/serve.js'
 import { buildSchema } from 'graphql/index.mjs'
 

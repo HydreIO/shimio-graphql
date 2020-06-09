@@ -1,10 +1,11 @@
-import { Serve } from '../../src/index.js'
+import Serve from '../../src/serve.js'
 import Query from '../../src/query.js'
 import { buildSchema } from 'graphql/index.mjs'
 import { readFileSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
-import { Server, Client } from '@hydre/shimio'
+import Server from '@hydre/shimio/server'
+import Client from '@hydre/shimio/client'
 
 const directory = dirname(fileURLToPath(import.meta.url))
 const schema = buildSchema(readFileSync(join(directory, 'schema.gql'), 'utf-8'))
