@@ -24,6 +24,14 @@ export default graphql_options => ({
     const { value } = await channel.read[
         Symbol.asyncIterator
     ]().next()
+
+    /* c8 ignore next 5 */
+    // got value undefined while real testing but did not found why yet
+    if (!value) {
+      channel.close()
+      return
+    }
+
     const operation = object_buffer.rtl(value.buffer)
     const stream = await executor.execute(operation)
 
