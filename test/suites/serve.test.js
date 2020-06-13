@@ -60,13 +60,20 @@ export default class {
     const limit3 = 5
     const limit4 = 4
     const limit5 = 6
-    const affirm = affirmation(1 + limit2 + limit3 + limit4 + limit5)
+    const affirm = affirmation(2 + limit2 + limit3 + limit4 + limit5)
     const query = Query(this.#client)
     const query2 = Query(this.#client2)
 
     await this.#server.listen(3000)
     await this.#client.connect()
     await this.#client2.connect()
+
+    affirm({
+      that   : 'querying once',
+      should : 'return after the first response',
+      because: (await query('{ ping }').once()).data,
+      is     : { ping: 'ping pong chin chan' },
+    })
 
     const { listen: lstn, stop: stp } = query('{ ping }')
 

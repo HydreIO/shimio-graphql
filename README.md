@@ -119,7 +119,11 @@ const END = 2000
 
 await client.connect()
 
-const { listen, stop } = query(/* GraphQL */ `
+const {
+  listen, // an asyncIterator yielding updates
+  stop, // close the channel
+  once // promise of the first result only
+} = query(/* GraphQL */ `
  query pang {
    ping
  }

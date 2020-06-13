@@ -43,6 +43,20 @@ export default (client = no_client()) => (
         // not reachable
       }
     },
+    // eslint-disable-next-line consistent-return
+    async once() {
+      await channel.write(uint8)
+      for await (const chunk of channel.read) {
+        const buffer = new Uint16Array(chunk.buffer)
+        const string = String.fromCharCode.apply(
+            undefined,
+            buffer,
+        )
+
+        channel.close()
+        return JSON.parse(string)
+      }
+    },
     stop: () => {
       channel.close()
     },
