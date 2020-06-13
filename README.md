@@ -119,7 +119,7 @@ const END = 2000
 
 await client.connect()
 
-const { listen, stop } = await query(/* GraphQL */ `
+const { listen, stop } = query(/* GraphQL */ `
  query pang {
    ping
  }
