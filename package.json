@@ -56,7 +56,7 @@
     "@babel/plugin-proposal-class-properties": "^7.10.1",
     "@babel/plugin-proposal-numeric-separator": "^7.10.1",
     "@babel/plugin-syntax-import-meta": "^7.10.1",
-    "@hydre/doubt": "^7.1.0",
+    "@hydre/doubt": "^6.1.0",
     "@hydre/shimio": "^3.2.0",
     "@sidy/eslint-config-sidy": "^1.4.13",
     "babel-eslint": "^11.0.0-beta.2",
