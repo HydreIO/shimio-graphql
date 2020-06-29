@@ -40,13 +40,15 @@ import { fileURLToPath } from 'url'
 import Server from '@hydre/shimio/server'
 import Serve from '@hydre/shimio-graphql/serve'
 import graphql from 'graphql'
+import Koa from 'koa'
 
 const directory = dirname(fileURLToPath(import.meta.url))
 const WAIT = 150
 const file = readFileSync(join(directory, 'schema.gql'), 'utf-8')
 const server = Server({
+  koa: new Koa(),
   // context here is an empty object created by Shimio server
-  allow_upgrade: ({ context }) => {
+  on_upgrade: ({ context }) => {
     context.through = new PassThrough({ objectMode: true })
     return true
   },
@@ -113,7 +115,7 @@ globalThis.WebSocket = ws
 // || ===========================================
 
 // see options in @hydre/shimio
-const client = new Client({ host: 'ws://0.0.0.0:3000' })
+const client = Client({ host: 'ws://0.0.0.0:3000' })
 const query = Query(client)
 const END = 2000
 
@@ -123,7 +125,7 @@ const {
   listen, // an asyncIterator yielding updates
   stop, // close the channel
   once // promise of the first result only
-} = query(/* GraphQL */ `
+} = await query(/* GraphQL */ `
  query pang {
    ping
  }

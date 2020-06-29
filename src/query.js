@@ -4,14 +4,8 @@ const no_client = () => {
   throw new Error('Missing client')
 }
 
-export default (client = no_client()) => (
-    query,
-    variables = {},
-) => {
-  if (typeof query !== 'string')
-    throw new Error('The query is not a String')
-  if (!client.connected)
-    throw new Error('The client is not connected')
+export default (client = no_client()) => async (query, variables = {}) => {
+  if (typeof query !== 'string') throw new Error('The query is not a String')
 
   const document = stripIgnoredCharacters(query)
   const bytes = [
@@ -26,17 +20,14 @@ export default (client = no_client()) => (
       uint16.byteOffset,
       uint16.byteLength,
   )
-  const channel = client.open_channel()
+  const channel = await client.open_channel()
 
   return {
     async *listen() {
       await channel.write(uint8)
       for await (const chunk of channel.read) {
         const buffer = new Uint16Array(chunk.buffer)
-        const string = String.fromCharCode.apply(
-            undefined,
-            buffer,
-        )
+        const string = String.fromCharCode.apply(undefined, buffer)
 
         yield JSON.parse(string)
         /* c8 ignore next 2 */
@@ -48,10 +39,7 @@ export default (client = no_client()) => (
       await channel.write(uint8)
       for await (const chunk of channel.read) {
         const buffer = new Uint16Array(chunk.buffer)
-        const string = String.fromCharCode.apply(
-            undefined,
-            buffer,
-        )
+        const string = String.fromCharCode.apply(undefined, buffer)
 
         channel.close()
         return JSON.parse(string)

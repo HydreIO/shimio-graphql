@@ -5,15 +5,14 @@ import { fileURLToPath } from 'url'
 import Server from '@hydre/shimio/server'
 import Serve from '../../src/serve.js'
 import { buildSchema } from 'graphql/index.mjs'
+import Koa from 'koa'
 
 const directory = dirname(fileURLToPath(import.meta.url))
 const WAIT = 150
-const file = readFileSync(
-    join(directory, 'schema.gql'),
-    'utf-8',
-)
+const file = readFileSync(join(directory, 'schema.gql'), 'utf-8')
 const server = Server({
-  allow_upgrade: ({ context }) => {
+  koa       : new Koa(),
+  on_upgrade: ({ context }) => {
     context.through = new PassThrough({ objectMode: true })
     return true
   },
@@ -37,8 +36,7 @@ const server = Server({
     subscription: {
       async *onMessage(_, { through }) {
         for await (const chunk of through) {
-          await new Promise(resolve =>
-            setTimeout(resolve, WAIT))
+          await new Promise(resolve => setTimeout(resolve, WAIT))
           yield chunk
         }
       },

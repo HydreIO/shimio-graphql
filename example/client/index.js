@@ -3,12 +3,10 @@ import ws from 'ws'
 import Client from '@hydre/shimio/client'
 import Query from '../../src/query.js'
 
-// RUNNING IN NODE.JS INSTEAD OF A BROWSER NEEDS THOSE 3 POLYFILLS
-
 // eslint-disable-next-line no-undef
 globalThis.WebSocket = ws
 
-const client = new Client({ host: 'ws://0.0.0.0:3000' })
+const client = Client({ host: 'ws://0.0.0.0:3000' })
 const query = Query(client)
 const END = 2000
 
