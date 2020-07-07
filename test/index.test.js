@@ -4,12 +4,12 @@ import reporter from 'tap-spec-emoji'
 import { pipeline, PassThrough } from 'stream'
 import ws from 'ws'
 import Koa from 'koa'
-import { buildSchema } from 'graphql/index.mjs'
 import { readFileSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import Server from '@hydre/shimio/server'
 import Client from '@hydre/shimio/client'
+import make_schema from '@hydre/graphql-batch-executor/make_schema'
 import Serve from '../src/serve.js'
 import Query from '../src/query.js'
 import object_buffer from '../src/object_buffer.js'
@@ -19,7 +19,6 @@ globalThis.WebSocket = ws
 const through = new PassThrough()
 const koa = new Koa()
 const directory = dirname(fileURLToPath(import.meta.url))
-const schema = buildSchema(readFileSync(join(directory, 'schema.gql'), 'utf-8'))
 
 pipeline(through, reporter(), process.stdout, () => {})
 
@@ -55,20 +54,26 @@ const server = Server({
   },
   on_socket: Serve({
     context: ({ context }) => context,
-    schema, // schema
-    query  : {
-      ping(_, { ping_pong }) {
-        return ping_pong
+    schema : make_schema({
+      document : readFileSync(join(directory, 'schema.gql'), 'utf-8'),
+      resolvers: {
+        Query: {
+          ping(_, __, { ping_pong }) {
+            return ping_pong
+          },
+        },
+        Subscription: {
+          onEvent: {
+            async *subscribe(_, { num }) {
+              for (;;) {
+                await new Promise(resolve => setTimeout(resolve, 1))
+                yield { onEvent: num }
+              }
+            },
+          },
+        },
       },
-    },
-    subscription: {
-      async *onEvent({ num }) {
-        for (;;) {
-          await new Promise(resolve => setTimeout(resolve, 1))
-          yield { onEvent: num }
-        }
-      },
-    },
+    }),
   }),
 })
 const client_1 = Client({ host: 'ws://0.0.0.0:3080' })
