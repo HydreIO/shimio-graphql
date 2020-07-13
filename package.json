@@ -47,7 +47,7 @@
   },
   "homepage": "https://github.com/hydreio/shimio-graphql#readme",
   "dependencies": {
-    "@hydre/graphql-batch-executor": "^3.0.1",
+    "@hydre/graphql-batch-executor": "^3.0.3",
     "folktale": "^2.3.2",
     "graphql": "^15.3.0"
   },
@@ -60,7 +60,7 @@
     "@hydre/shimio": "^4.1.2",
     "@sidy/eslint-config-sidy": "^1.4.13",
     "babel-eslint": "^11.0.0-beta.2",
-    "c8": "^7.2.0",
+    "c8": "^7.2.1",
     "casual": "^1.6.2",
     "eslint": "^7.4.0",
     "eslint-plugin-unicorn": "^20.1.0",
