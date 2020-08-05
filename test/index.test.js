@@ -75,6 +75,7 @@ const server = Server({
       },
     }),
   }),
+  time_between_connections: -1,
 })
 const client_1 = Client({ host: 'ws://0.0.0.0:3080' })
 const client_2 = Client({ host: 'ws://0.0.0.0:3080' })
