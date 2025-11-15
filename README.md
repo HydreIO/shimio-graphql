@@ -11,17 +11,32 @@
 
 <h3 align=center>A GraphQL server and client built on Shimio</h3>
 
-- Node <kbd>^14.3</kbd>
-- Concurrent batched operations with [graphql-batch-executor](https://github.com/HydreIO/graphql-batch-executor)
-- Server built as a [Shimio](https://github.com/HydreIO/shimio) middleware
-- Client as an asyncIterator
+## Features
+
+- **Node.js**: >= 20.0.0
+- **GraphQL v16**: Full support for the latest GraphQL spec
+- **Concurrent batched operations** with [graphql-batch-executor](https://github.com/HydreIO/graphql-batch-executor)
+- **Server** built as a [Shimio](https://github.com/HydreIO/shimio) middleware
+- **Client** as an async iterator
+- **Real-time subscriptions** over multiplexed WebSocket channels
+
+## What's New in v6.0.0
+
+- ✨ Upgraded to GraphQL v16.9.0 (from v15.4.0)
+- 🚀 Node.js 20+ support with native language features
+- 📦 Updated to @hydre/shimio v5.0.0 (ws v8)
+- 🧹 Removed Babel dependencies (no longer needed for modern Node.js)
+- 🔧 Modernized development dependencies
+- 💯 All tests passing with GraphQL v16
 
 ## Table of content <!-- omit in toc -->
 
 - [Installation](#installation)
+- [Requirements](#requirements)
 - [Quick start](#quick-start)
-  - [Server exemple](#server-exemple)
+  - [Server example](#server-example)
   - [Client example](#client-example)
+- [Migration from v5.x](#migration-from-v5x)
 
 ## Installation
 
@@ -29,9 +44,15 @@
 npm install @hydre/shimio-graphql
 ```
 
+## Requirements
+
+- **Node.js**: >= 20.0.0
+- **GraphQL**: v16.x
+- **@hydre/shimio**: v5.x
+
 ## Quick start
 
-### Server exemple
+### Server example
 ```js
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
@@ -148,5 +169,44 @@ for await (const chunk of listen())
   console.log('received', inspect(chunk, false, Infinity, true))
 
 client.disconnect()
+```
+
+
+
+## Migration from v5.x
+
+### Breaking Changes
+
+#### GraphQL v16
+
+shimio-graphql v6.0.0 uses GraphQL v16, which has breaking changes from v15:
+
+1. **Type system changes**: Some internal type definitions have changed
+2. **Execution changes**: Minor improvements to subscription execution
+3. **Deprecated features removed**: Some v15 deprecations are now removed
+
+**Most users won't need code changes** - the GraphQL v16 upgrade is largely internal. If you use custom GraphQL directives or advanced schema manipulation, review the [GraphQL v16 changelog](https://github.com/graphql/graphql-js/releases/tag/v16.0.0).
+
+#### @hydre/shimio v5
+
+shimio-graphql v6 requires @hydre/shimio v5.x (which uses ws v8). See the [@hydre/shimio migration guide](https://github.com/HydreIO/shimio#migration-from-v4x) for details.
+
+**No code changes needed** if you only use `@hydre/shimio-graphql/serve` and `@hydre/shimio-graphql/query`.
+
+### Node.js Version
+
+Upgrade to Node.js >= 20.0.0 before upgrading to v6.0.0.
+
+### No API Changes
+
+The shimio-graphql API remains unchanged:
+- `Serve()` server middleware: same API
+- `Query()` client: same API
+- All examples from v5 work in v6
+
+Simply update your dependencies:
+
+```sh
+npm install @hydre/shimio@^5.0.0 @hydre/shimio-graphql@^6.0.0 graphql@^16.0.0
 ```
 

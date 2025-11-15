@@ -1,17 +1,20 @@
 {
   "name": "@hydre/shimio-graphql",
-  "version": "5.0.5",
+  "version": "6.0.0",
   "description": "A GraphQL server and client built on Shimio",
   "type": "module",
   "main": "src/serve.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
-    "test": "node --harmony-top-level-await --harmony-private-methods test/index.test.js",
-    "coverage": "c8 --check-coverage node --harmony-top-level-await --harmony-private-methods test/index.test.js",
+    "test": "node test/index.test.js",
+    "coverage": "c8 --check-coverage node test/index.test.js",
     "lint": "prettier-eslint $PWD/\"**/*.js\" --print-width 80 --list-different && eslint --color .",
     "format": "prettier-eslint $PWD/\"**/*.js\" --print-width 80 --write",
     "postversion": "git push && git push --tags",
-    "example:server": "node --harmony-top-level-await --harmony-private-methods example/server/index.js",
-    "example:client": "node --harmony-top-level-await --harmony-private-methods example/client/index.js"
+    "example:server": "node example/server/index.js",
+    "example:client": "node example/client/index.js"
   },
   "exports": {
     "./query": "./src/query.js",
@@ -32,16 +35,6 @@
     "server",
     "client"
   ],
-  "babel": {
-    "parserOpts": {
-      "allowAwaitOutsideFunction": true
-    },
-    "plugins": [
-      "@babel/plugin-proposal-class-properties",
-      "@babel/plugin-proposal-numeric-separator",
-      "@babel/plugin-syntax-import-meta"
-    ]
-  },
   "publishConfig": {
     "access": "public"
   },
@@ -49,25 +42,20 @@
   "dependencies": {
     "@hydre/graphql-batch-executor": "^3.1.3",
     "folktale": "^2.3.2",
-    "graphql": "^15.4.0"
+    "graphql": "^16.9.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.3",
-    "@babel/plugin-proposal-class-properties": "^7.12.1",
-    "@babel/plugin-proposal-numeric-separator": "^7.12.1",
-    "@babel/plugin-syntax-import-meta": "^7.10.4",
     "@hydre/doubt": "^7.1.0",
-    "@hydre/shimio": "^4.2.3",
+    "@hydre/shimio": "file:../shimio",
     "@sidy/eslint-config-sidy": "^1.4.15",
-    "babel-eslint": "^11.0.0-beta.2",
-    "c8": "^7.3.5",
+    "c8": "^10.1.3",
     "casual": "^1.6.2",
-    "eslint": "^7.12.1",
-    "eslint-plugin-unicorn": "^23.0.0",
-    "koa": "^2.13.0",
-    "prettier-eslint-cli": "^5.0.0",
-    "supports-color": "^7.2.0",
+    "eslint": "^9.17.0",
+    "eslint-plugin-unicorn": "^56.0.1",
+    "koa": "^2.15.3",
+    "prettier": "^3.4.2",
+    "supports-color": "^9.4.0",
     "tap-spec-emoji": "^6.1.2",
-    "ws": "^7.3.1"
+    "ws": "^8.18.0"
   }
 }
