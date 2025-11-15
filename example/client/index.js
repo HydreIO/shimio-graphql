@@ -1,16 +1,16 @@
-import { inspect } from 'util'
-import ws from 'ws'
-import Client from '@hydre/shimio/client'
-import Query from '../../src/query.js'
+import { inspect } from "util";
+import ws from "ws";
+import Client from "@hydre/shimio/client";
+import Query from "../../src/query.js";
 
 // eslint-disable-next-line no-undef
-globalThis.WebSocket = ws
+globalThis.WebSocket = ws;
 
-const client = Client({ host: 'ws://0.0.0.0:3000' })
-const query = Query(client)
-const END = 2000
+const client = Client({ host: "ws://0.0.0.0:3000" });
+const query = Query(client);
+const END = 2000;
 
-await client.connect()
+await client.connect();
 
 const { listen, stop } = await query(/* GraphQL */ `
   query pang {
@@ -25,13 +25,13 @@ const { listen, stop } = await query(/* GraphQL */ `
   subscription hey_listen {
     onMessage
   }
-`)
+`);
 
 setTimeout(() => {
-  stop() // unsubscribe from operation
-}, END)
+  stop(); // unsubscribe from operation
+}, END);
 
 for await (const m of listen())
-  console.log('received', inspect(m, false, Infinity, true))
+  console.log("received", inspect(m, false, Infinity, true));
 
-client.disconnect()
+client.disconnect();
