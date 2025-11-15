@@ -25,7 +25,7 @@
     "url": "git+https://github.com/hydreio/shimio-graphql.git"
   },
   "author": "Hydre",
-  "license": "MIT",
+  "license": "UNLICENSE",
   "bugs": {
     "url": "https://github.com/hydreio/shimio-graphql/issues"
   },

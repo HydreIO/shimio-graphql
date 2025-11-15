@@ -1,6 +1,6 @@
 <h1 align=center>@hydre/shimio-graphql</h1>
 <p align=center>
-  <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/license-Unlicense-blue.svg?style=for-the-badge" />
   <img src="https://img.shields.io/codecov/c/github/hydreio/shimio-graphql/master?logo=codecov&style=for-the-badge"/>
   <a href="https://www.npmjs.com/package/@hydre/shimio-graphql">
     <img src="https://img.shields.io/npm/v/@hydre/shimio-graphql.svg?logo=npm&style=for-the-badge" />
