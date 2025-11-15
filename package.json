@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@hydre/doubt": "^7.1.0",
-    "@hydre/shimio": "file:../shimio",
+    "@hydre/shimio": "^5.0.0",
     "@sidy/eslint-config-sidy": "^1.4.15",
     "c8": "^10.1.3",
     "casual": "^1.6.2",
